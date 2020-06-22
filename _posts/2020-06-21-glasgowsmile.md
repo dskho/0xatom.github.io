@@ -3,7 +3,7 @@ title: Vulnhub - Glasgow Smile Writeup
 description: My writeup on glasgow smile box.
 categories:
  - vulnhub
-tags: vulnhub, joomla, burp, brute force, shell, cronjob
+tags: vulnhub
 ---
 
 Hi all, this was a really CTFy box :D
