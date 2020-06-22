@@ -17,11 +17,7 @@ date_format: '%Y-%m-%d'
 url:
 baseurl:
 permalink: pretty
-
-duoshuo:
-  enable: true
-  shortname: your-duoshuo-shortname
-  
+ 
 # Pagination
 paginate: 10
 #paginate_path: "/page:num/"
