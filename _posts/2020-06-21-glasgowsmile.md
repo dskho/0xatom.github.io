@@ -1,10 +1,12 @@
 ---
 title: Vulnhub - Glasgow Smile Writeup
-description: ![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Popcorn_Time_logo.png/220px-Popcorn_Time_logo.png) My writeup on glasgow smile box.
+description: My writeup on glasgow smile box.
 categories:
  - vulnhub
 tags: vulnhub
 ---
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Popcorn_Time_logo.png/220px-Popcorn_Time_logo.png)
 
 Hi all, this was a really CTFy box :D
 
