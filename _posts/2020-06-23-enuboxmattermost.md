@@ -86,3 +86,62 @@ Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
 You may notice the `nmaptcp`, that's because we have to run a UDP scan as well. Note : UDP scan is slower than TCP.
+
+```
+$ nmap -sU $ip
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-06-23 22:23 EEST
+Nmap scan report for ubuntu.zte.com.cn (192.168.1.6)
+Host is up (0.00054s latency).
+Not shown: 996 closed ports
+PORT     STATE         SERVICE
+68/udp   open|filtered dhcpc
+69/udp   open|filtered tftp
+631/udp  open|filtered ipp
+5353/udp open|filtered zeroconf
+```
+
+`tftp` seems interesting, few words about `tftp`.
+
+TFTP (Trivial File Transfer Protocol) it is simpler than FTP, does file transfer between client and server but does not provide user authentication.
+
+If we try to connect, we can see that we can't list the files.
+
+```
+$ tftp $ip
+tftp> ?
+Commands may be abbreviated.  Commands are:
+
+connect 	connect to remote tftp
+mode    	set file transfer mode
+put     	send file
+get     	receive file
+quit    	exit tftp
+verbose 	toggle verbose mode
+trace   	toggle packet tracing
+status  	show current status
+binary  	set mode to octet
+ascii   	set mode to netascii
+rexmt   	set per-packet retransmission timeout
+timeout 	set total retransmission timeout
+?       	print help information
+tftp> ls
+?Invalid command
+```
+
+Now if we visit the webpage we can see this :
+
+![](https://i.imgur.com/aWPbryI.png)
+
+We can try to download the `README.md` file from `tftp`.
+
+```
+tftp> get README.md
+Received 65 bytes in 0.0 seconds
+tftp> quit
+$ cat README.md 
+Hello Admin,
+
+Please use the following key: ComplexPassword0!
+```
+
+We got some creds! `admin:ComplexPassword0!`
