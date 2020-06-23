@@ -6,8 +6,6 @@ categories:
 tags: vulnhub
 ---
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Popcorn_Time_logo.png/220px-Popcorn_Time_logo.png)
-
 Hi all, this was a really CTFy box :D
 
 You can find the machine there > [Glasgow Smile](https://www.vulnhub.com/entry/glasgow-smile-11,491/){:target="_blank"}
