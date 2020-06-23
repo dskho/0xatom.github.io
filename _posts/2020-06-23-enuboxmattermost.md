@@ -280,5 +280,22 @@ mattermost@192.168.1.6's password:
 secret                                        100% 8584     9.3MB/s   00:00
 ```
 
-Let's open it now with IDA Pro.
+Let's open it now with IDA Pro, to decompile do View -> Open subviews -> Pseudocode and we can see this pseudocode gives us the key : 
+
+![](https://i.imgur.com/dJgsQFL.png)
+
+Let's enter it and get root shell!
+
+```
+mattermost@ubuntu:~/Desktop$ ./secret 
+Hello Admin, Please enter the secret key:
+62535
+root@ubuntu:~/Desktop# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root),4(adm),24(cdrom),30(dip),46(plugdev),116(lpadmin),126(sambashare),130(ftp),1000(mattermost)
+```
+
+Was an awesome box, that teaches us how important enumeration is!
+
+
 
