@@ -1,6 +1,6 @@
 ---
-title: Vulnhub - Glasgow Smile Writeup
-description: My writeup on glasgow smile box.
+title: Vulnhub - EnuBox Mattermost
+description: My writeup on EnuBox Mattermost box.
 categories:
  - vulnhub
 tags: vulnhub
