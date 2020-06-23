@@ -3,7 +3,7 @@ title: Vulnhub - EnuBox Mattermost
 description: My writeup on EnuBox Mattermost box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub udp mattermost tftp ftp ssh
 ---
 
 ![](https://www.pngitem.com/pimgs/m/31-312481_mattermost-icon-png-transparent-png.png)
@@ -144,7 +144,7 @@ Hello Admin,
 Please use the following key: ComplexPassword0!
 ```
 
-We got some creds! `admin:ComplexPassword0!` we can use them under port `8065`, there Mattermost is running an open-source online chat service & we're in!
+We got some creds! `admin:ComplexPassword0!` we can use them under port `8065`, there Mattermost is running an open-source chat service & we're in!
 
 After some enumeration under `plugin marketplace`, i noticed the `zoom` plugin has a weird URL :
 
