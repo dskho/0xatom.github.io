@@ -222,3 +222,63 @@ mattermost@192.168.1.6's password:
 mattermost@ubuntu:~$ whoami
 mattermost
 ```
+
+## mattermost -> root
+
+under `/Desktop` we can see this file : 
+
+```
+mattermost@ubuntu:~/Desktop$ ls -la
+total 24
+drwxr-xr-x  2 mattermost mattermost 4096 Jan  2 15:37 .
+drwxr-xr-x 18 mattermost mattermost 4096 Jan  6 01:13 ..
+-rw-r--r--  1 mattermost mattermost  233 Jan  2 15:37 README.md
+-rwsr-xr-x  1 root       root       8584 Jan  2 15:26 secret
+```
+
+Let's do some basic reverse engineering on it.
+
+reverse engineering = understand what a binary does, when there is no source code available.
+
+Let's do some binary enumeration : 
+
+When we run it ask from us to enter the "secret key", so we have to find out the secret key.
+
+```
+mattermost@ubuntu:~/Desktop$ ./secret 
+Hello Admin, Please enter the secret key:
+1337
+Your is either invalid or expired
+```
+
+It's a 64bit ELF.
+
+```
+mattermost@ubuntu:~/Desktop$ file secret 
+secret: setuid ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=199fcaacbd26c0c5a26dd1afb01b4ebfcfaa4d18, not stripped
+```
+
+If we run strings on it we can understand that if we enter the right secret key will give us a shell.
+
+```
+mattermost@ubuntu:~/Desktop$ strings secret 
+..junk data..
+Hello Admin, Please enter the secret key:
+/bin/bash
+Your is either invalid or expired
+;*3$"
+..junk data..
+```
+
+Let's copy this file in our box, and let's try to decompile it using IDA Pro.
+
+decompile = takes the machine code and reverts it back to the main language.
+
+```
+$ scp mattermost@$ip:/home/mattermost/Desktop/secret .
+mattermost@192.168.1.6's password: 
+secret                                        100% 8584     9.3MB/s   00:00
+```
+
+Let's open it now with IDA Pro.
+
