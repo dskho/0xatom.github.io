@@ -1,5 +1,5 @@
 ---
-title: Vulnhub - EnuBox: Mattermost Writeup
+title: Vulnhub - EnuBox Mattermost Writeup
 description: My writeup on EnuBox: Mattermost box.
 categories:
  - vulnhub
