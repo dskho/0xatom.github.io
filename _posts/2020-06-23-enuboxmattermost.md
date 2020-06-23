@@ -3,7 +3,7 @@ title: Vulnhub - EnuBox Mattermost
 description: My writeup on EnuBox Mattermost box.
 categories:
  - vulnhub
-tags: vulnhub udp mattermost tftp ftp ssh
+tags: vulnhub udp mattermost tftp ftp ssh reverse ida binary
 ---
 
 ![](https://www.pngitem.com/pimgs/m/31-312481_mattermost-icon-png-transparent-png.png)
@@ -296,6 +296,3 @@ uid=0(root) gid=0(root) groups=0(root),4(adm),24(cdrom),30(dip),46(plugdev),116(
 ```
 
 Was an awesome box, that teaches us how important enumeration is!
-
-
-
