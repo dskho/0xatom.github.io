@@ -174,7 +174,7 @@ uid=0(root) gid=0(root) groups=0(root),112(lshell),1001(luigi)
 
 ## Cracking .zip & grab the flag
 
-Now let challenge isnt over, we can see under `/root` directory a `.zip` :
+Now the challenge isnt over, we can see under `/root` directory a `.zip` :
 
 ```
 # ls
