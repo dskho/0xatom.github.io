@@ -3,7 +3,7 @@ title: Vulnhub - Super Mario Host
 description: My writeup on Super Mario Host box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub john ssh kernel bruteforce gobuster searchsploit rbash awk
 ---
 
 ![](https://static.posters.cz/image/750/%CE%91%CF%86%CE%AF%CF%83%CE%B5%CF%82/super-mario-characters-i22822.jpg)
