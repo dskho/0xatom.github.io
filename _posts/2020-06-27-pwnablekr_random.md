@@ -3,7 +3,7 @@ title: pwnable.kr - random
 description: My writeup on random challenge.
 categories:
  - pwnablekr
-tags: pwnablekr
+tags: pwnablekr pwntools python xor rand exploit
 ---
 
 ![](https://i.imgur.com/cg6lYs1.png)
