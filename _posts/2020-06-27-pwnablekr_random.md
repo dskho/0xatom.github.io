@@ -121,8 +121,52 @@ We can do this with python pretty easy :
 
 ## Exploitation
 
+We can reverse this :
 
+```c
+(key ^ random) == 0xdeadbeef 
+```
 
+To be : 
+
+```c
+(random ^ 0xdeadbeef) == key
+```
+
+Let's do this with python.
+
+```
+>>> 1804289383 ^ 0xdeadbeef
+3039230856
+```
+
+Let's input this now :
+
+```
+random@pwnable:~$ ./random
+3039230856
+Good!
+Mommy, I thought libc random is unpredictable...
+```
+
+## pwntools exploit
+
+I coded this exploit to automate the process :
+
+```python
+from pwn import *
+#context.log_level = 'debug'
+
+def exploit():
+    shell = ssh(host='pwnable.kr', user='random', password='guest', port=2222)
+    exp = shell.process(executable='./random')
+    exp.sendline(str(3039230856))
+    exp.recvline()  # for "Good!"
+    log.success(exp.recvline())
+
+if __name__ == '__main__':
+	exploit()
+```
 
 
 
