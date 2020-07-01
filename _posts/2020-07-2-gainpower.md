@@ -73,6 +73,8 @@ employee1@192.168.1.2's password:
 [employee1@192 ~]$ 
 ```
 
+## Sudo brute force using custom script - shell as programmer
+
 Now the banner says something : `btw one of my employee have sudo powers because he is my favourite`, there are lot of employee :
 
 ```
@@ -147,6 +149,8 @@ Password:
 programmer
 ```
 
+## programmer -> vanshal
+
 Bingo now for the next privesc we need [pspy](https://github.com/DominicBreuker/pspy){:target="_blank"} to detect the cronjob!
 
 ```
@@ -178,6 +182,8 @@ listening on [any] 5555 ...
 [vanshal@192 ~]$ whoami
 vanshal
 ```
+
+## vanshal -> root
 
 Great, now we can see this file in his desktop :
 
