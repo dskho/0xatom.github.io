@@ -8,7 +8,7 @@ tags: vulnhub ajenti pspy ssh bash sudo bruteforce zip fcrackzip
 
 ![](https://static.vecteezy.com/system/resources/previews/000/602/897/non_2x/creative-power-logo-concept-design-templates-vector.jpg)
 
-Hi all, i have to admit that this box took me a while to pwn it. I got stuck HARD with the privesc but at the end was really easy but i got confused anyway let's pwn it. :)
+Hi all, i have to admit that this box took me a while to pwn it. I got stuck HARD with the privesc but at the end was really easy, i got confused anyway let's pwn it. :)
 
 You can find the machine there > [GainPower](https://www.vulnhub.com/entry/gainpower-1,493/){:target="_blank"}
 
