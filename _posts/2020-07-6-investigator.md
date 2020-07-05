@@ -94,4 +94,44 @@ Here i stuck, i was searching for the flag for loooot of hours & then i deleted 
 
 Now as you can see, the android box asks for a PIN:
 
+![](https://i.imgur.com/5xnXKzl.png)
 
+We can remove this using our root shell, simply do this:
+
+```
+uid=0(root) gid=0(root)@x86:/ # cd /data/system
+uid=0(root) gid=0(root)@x86:/data/system # rm *.key
+```
+
+& reboot the box, now we can see there is no PIN:
+
+![](https://i.imgur.com/uTqpowJ.png)
+
+If we go to open an app asks for a pattern:
+
+![](https://i.imgur.com/ecarBwa.png)
+
+Probably there is an app in background, that locks the other apps, let's search for it and remove it:
+
+```
+$ adb connect $ip:5555                       
+connected to 192.168.1.10:5555
+$ adb shell su 0 pm list packages | grep lock
+package:com.domobile.applockwatcher
+package:bong.android.androidlock
+package:com.martianmode.applock <---
+package:com.android.deskclock
+```
+
+`com.martianmode.applock` seems interesting, let's remove it:
+
+```
+$ adb uninstall com.martianmode.applock 
+Success
+```
+
+Now we can see the real flag in messages:
+
+![](https://i.imgur.com/GNjkEeN.png)
+
+I learnt some new stuff, fux box :)
