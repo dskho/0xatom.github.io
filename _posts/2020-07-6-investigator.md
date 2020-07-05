@@ -3,7 +3,7 @@ title: Vulnhub - Investigator
 description: My writeup on Investigator box.
 categories:
  - vulnhub
-tags: vulnhub android
+tags: vulnhub android adb
 ---
 
 ![](https://hackersfun.com/wp-content/uploads/2019/03/evil-android.jpg)
@@ -41,6 +41,8 @@ port `5555` seems suspicious, i did some research on it and i found a way to exp
 port `5555` == adb service, adb (Android Debug Bridge) can control your device over USB or wireless by enabling a daemon server at port 5555.
 
 Install adb: `sudo apt-get install adb`
+
+## Exploiting adb service
 
 Now let's exploit it, first we need to connect on target:
 
@@ -89,6 +91,8 @@ You flag is not here  !!!
 
 Agent "S"   Your Secret Key ---------------->259148637
 ```
+
+## Removing PIN - finding the real flag
 
 Here i stuck, i was searching for the flag for loooot of hours & then i deleted the box i said OK i got root shell i can't find the real flag. Today i had a chat with a friend on this box and we both stuck finding the real flag, i told him that you can remove the pin using adb shell. After some minutes he found the real flag! Shout out to @Freakazoid without him i wasn't able to gain the real flag! :D
 
