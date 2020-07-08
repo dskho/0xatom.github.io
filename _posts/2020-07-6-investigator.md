@@ -139,3 +139,47 @@ Now we can see the real flag in messages:
 ![](https://i.imgur.com/GNjkEeN.png)
 
 I learnt some new stuff, fux box :)
+
+## Update - Reading sms without physical access
+
+There is a way to read sms (flag) without doing all these stuff ^ by accessing the `mmssms.db` :
+
+```
+uid=0(root) gid=0(root)@x86:/ # cd /data/data/com.android.providers.telephony/databases
+uid=0(root) gid=0(root)@x86:/data/data/com.android.providers.telephony/databases # ls 
+mmssms.db
+mmssms.db-journal
+telephony.db
+telephony.db-journal
+uid=0(root) gid=0(root)@x86:/data/data/com.android.providers.telephony/databases # sqlite3 mmssms.db
+SQLite version 3.7.11 2012-03-20 11:35:50
+Enter ".help" for instructions
+Enter SQL statements terminated with a ";"
+sqlite> .tables
+addr                 pdu                  threads            
+android_metadata     pending_msgs         words              
+attachments          rate                 words_content      
+canonical_addresses  raw                  words_segdir       
+drm                  sms                  words_segments     
+part                 sr_pending         
+sqlite> select * from sms;
+1|5|(999) 999-9999||1593664987923|0||0|-1|5|||Welcome to  investigator ||0|0|1
+2|5|(999) 999-9999||1593665026053|0||0|-1|6|||Your flag is in next chat||0|0|1
+3|5|(999) 999-9999||1593665043359|0||1|-1|6|||welcome to investigator||0|0|1
+4|6|(888) 888-8888||1593665065317|0||1|-1|6|||welcome to investigator||0|0|1
+5|6|(888) 888-8888||1593665072797|0||1|-1|6|||your flag is not here||0|0|1
+6|6|(888) 888-8888||1593665074507|0||1|-1|6|||welcome to investigator||0|0|1
+7|7|(777) 777-7777||1593665090987|0||1|-1|6|||welcome to investigator||0|0|1
+8|7|(777) 777-7777||1593665097063|0||1|-1|6|||your flag is not  here||0|0|1
+9|8|(666) 666-6666||1593665111714|0||1|-1|6|||welcome to investigator||0|0|1
+10|8|(666) 666-6666||1593665300650|0||1|-1|6|||share your screen shot in  telegram ------------ telegram group link ------------->https://t.me/joinchat/MnPu-hwn_MMS5sX0jngsoQ||0|0|1
+11|8|(666) 666-6666||1593665656730|0||1|-1|6|||if the above link is not working share your screenshot at twitter -------->twitter id ------->@sivanes90967948||0|0|1
+12|8|(666) 666-6666||1593665672721|0||1|-1|6|||welcome to investigator||0|0|1
+13|9|(555) 555-5555||1593665743201|0||1|-1|6|||welcome to investigator||0|0|1
+14|9|(555) 555-5555||1593665748223|0||1|-1|6|||no flag||0|0|1
+15|9|(555) 555-5555||1593665749432|0||1|-1|6|||welcome to investigator||0|0|1
+16|10|(444) 444-4444||1593665764190|0||1|-1|6|||welcome to investigator||0|0|1
+17|10|(444) 444-4444||1593665766008|0||1|-1|6|||no flag||0|0|1
+```
+
+Simple! :D
