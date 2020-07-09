@@ -3,7 +3,7 @@ title: Vulnhub - sunset decoy
 description: My writeup on sunset decoy box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub rbash ssh chkrootkit john shadow
 ---
 
 ![](https://pbs.twimg.com/media/Dsh2wzTWkAEgsd0.jpg)
@@ -65,6 +65,8 @@ Archive:  save.zip
  extracting: etc/hostname 
 ```
 
+## Cracking user password - Shell access
+
 Seems like a copy of `/etc`, let's focus on `shadow` file since it contains user passwords in encrypted format. I saved the user password in a file and i'll run john on it.
 
 ```
@@ -101,6 +103,8 @@ Last login: Thu Jul  9 19:03:50 2020 from 192.168.1.16
 -rbash: cd: restricted
 ```
 
+## rbash bypass 
+
 Oh we're into `rbash`!
 
 `rbash = restricted shell` Restricts some of the system capabilities like commands etc 
@@ -125,6 +129,8 @@ PATH:/home/296640a3b825115a47b68fc44501c828/
 296640a3b825115a47b68fc44501c828
 uid=1000(296640a3b825115a47b68fc44501c828) gid=1000(296640a3b825115a47b68fc44501c828) groups=1000(296640a3b825115a47b68fc44501c828)
 ```
+
+## user -> root - exploiting chkrootkit
 
 Now privesc is simple, we can see this `SV-502` directory in home. If we follow it we can see a `log.txt` that provide a really useful information:
 
@@ -187,7 +193,3 @@ Thanks for playing! - Felipe Winsnes (@whitecr0wz)
 ```
 
 Fun box! :)
-
-
-
-
