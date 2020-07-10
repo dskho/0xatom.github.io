@@ -90,7 +90,7 @@ itsskv@cybersploit-CTF:~$ uname -r
 Seems really old, let's search for possible exploits.
 
 ```
-searchsploit 3.13.0
+$ searchsploit 3.13.0
 ------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
  Exploit Title                                                                                                                                         |  Path
 ------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
@@ -108,7 +108,7 @@ File Type: C source, ASCII text, with very long lines, with CRLF line terminator
 
 Copied to: /root/Documents/vulnhub/cybersploit/37292.c
 
-$ cybersploit python3 -m http.server 80
+$ python3 -m http.server 80
 Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
 ```
 
