@@ -6,7 +6,7 @@ categories:
 tags: vulnhub
 ---
 
-![](https://pbs.twimg.com/media/Dsh2wzTWkAEgsd0.jpg)
+![](https://i2.wp.com/lifars.com/wp-content/uploads/2020/04/Top-10-most-dangerous-Cyber-Virus-scaled.jpg?fit=2560%2C1500&ssl=1)
 
 Hi all, i really hate this type of boxes, but anyway let's pwn it! :D
 
