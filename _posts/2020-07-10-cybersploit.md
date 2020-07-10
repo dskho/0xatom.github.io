@@ -3,7 +3,7 @@ title: Vulnhub - CyberSploit
 description: My writeup on CyberSploit box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub base64 ssh binary kernel searchsploit
 ---
 
 ![](https://i2.wp.com/lifars.com/wp-content/uploads/2020/04/Top-10-most-dangerous-Cyber-Virus-scaled.jpg?fit=2560%2C1500&ssl=1)
@@ -44,6 +44,8 @@ Good Work !
 Flag1: cybersploit{youtube.com/c/cybersploit}
 ```
 
+## Shell as itsskv
+
 After this i tried ton of stuff, brute force with custom wordlist with `cewl`, custom wordlist with `john`, brute force with `rockyou.txt` nothing. Then i had a crazy idea to try `cybersploit{youtube.com/c/cybersploit}` as password and it worked. LOL
 
 ```
@@ -73,6 +75,8 @@ itsskv@cybersploit-CTF:~$ cat flag2.txt | perl -lape '$_=pack"(B8)*",@F'
 good work !
 flag2: cybersploit{https:t.me/cybersploit1}
 ```
+
+## Exploiting old kernel version
 
 Now privesc to root, is kernel exploit. Let's check kernel version:
 
