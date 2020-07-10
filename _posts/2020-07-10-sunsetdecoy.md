@@ -55,7 +55,7 @@ Needs a password, no problem. Let's fire up my favorite `fcrackzip`:
 $ fcrackzip -u -D -p /usr/share/wordlists/rockyou.txt save.zip 
 
 PASSWORD FOUND!!!!: pw == manuel
-$ decoy unzip -P manuel save.zip 
+$ unzip -P manuel save.zip 
 Archive:  save.zip
   inflating: etc/passwd              
   inflating: etc/shadow              
