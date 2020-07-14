@@ -130,7 +130,7 @@ Let's add it to `/etc/hosts`:
 
 `192.168.1.14    datasafe.votenow.local`
 
-## shell as www-data -> admin | exploiting vulnerable phpmyadmin version
+## shell as apache -> admin | exploiting vulnerable phpmyadmin version
 
 Now we can see phpmyadmin running there:
 
