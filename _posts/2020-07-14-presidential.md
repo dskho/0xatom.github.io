@@ -48,12 +48,12 @@ PORT     STATE SERVICE VERSION
 MAC Address: 00:0C:29:A1:D7:E1 (VMware)
 ```
 
-When we visit the website we can see this in top left corner : `contact@votenow.local` That's probably the domain name. Since the anatomy of an email address is this:
+When we visit the website we can see this in top left corner : `contact@votenow.local` That's probably the domain. Since the anatomy of an email address is this:
 
 ```
 contact@votenow.local
   ^          ^
- user    domain name
+ user      domain
 ```
 
 Let's add it to `/etc/hosts`:
@@ -72,5 +72,67 @@ $ gobuster dir -q -u http://$ip/ -w $dir_medium -x php,txt,html -o gobuster.txt
 
 Nothing interesting. `/config.php` is empty. Here i stuck for lot of hours then i tried to brute force extensions but `gobuster` doesnt support extenstion file. Only `wfuzz` can help here:
 
+```
+$ wfuzz -c -w ~/Documents/wordlists/SecLists/Discovery/Web-Content/raft-small-directories.txt -w ~/Documents/wordlists/SecLists/Discovery/Web-Content/raft-small-extensions.txt --hw 854 --hc 404,403 http://$ip/FUZZFUZ2Z  
 
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+********************************************************
+* Wfuzz 2.4.5 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.1.14/FUZZFUZ2Z
+Total requests: 19371708
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                                                                 
+===================================================================
+
+000075115:   200        0 L      0 W      0 Ch        "config - .php"                                                                                                         
+000075427:   200        8 L      14 W     107 Ch      "config - .php.bak" 
+```
+
+Perfect `/config.php.bak` has some database creds in:
+
+```
+<?php
+
+$dbUser = "votebox";
+$dbPass = "casoj3FFASPsbyoRP";
+$dbHost = "localhost";
+$dbname = "votebox";
+
+?>
+```
+
+But how we can use them?? Since we have a domain `votenow.local` we can search for subdomains.
+
+```
+$ wfuzz -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -H "Host: FUZZ.votenow.local" --hw 854 --hc 400 $ip 
+
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+********************************************************
+* Wfuzz 2.4.5 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.1.14/
+Total requests: 207643
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                                                                 
+===================================================================
+
+000009229:   200        68 L     369 W    9500 Ch     "datasafe"
+```
+
+Let's add it to `/etc/hosts`:
+
+`192.168.1.14    datasafe.votenow.local`
+
+Now we can see phpmyadmin running there:
+
+![](https://i.ibb.co/wcX07d6/Screenshot-4.png)
+
+We can use creds here `votebox:casoj3FFASPsbyoRP` & we're in!
 
