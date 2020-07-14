@@ -287,7 +287,7 @@ Congratulations on getting root.
     `-.-' \ )-`( , o o)
           `-    \`_`"'-
 
-This CTF was created by bootlesshacker - https://security.caerdydd.wales
+This CTF was created by bootlesshacker
 
 Please visit my blog and provide feedback - I will be glad to hear from you.
 [root@votenow ~]# cat /home/admin/user.txt
