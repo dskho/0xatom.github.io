@@ -47,3 +47,30 @@ PORT     STATE SERVICE VERSION
 |_  256 66:a8:a1:9f:db:d5:ec:4c:0a:9c:4d:53:15:6c:43:6c (ED25519)
 MAC Address: 00:0C:29:A1:D7:E1 (VMware)
 ```
+
+When we visit the website we can see this in top left corner : `contact@votenow.local` That's probably the domain name. Since the anatomy of an email address is this:
+
+```
+contact@votenow.local
+  ^          ^
+ user    domain name
+```
+
+Let's add it to `/etc/hosts`:
+
+`192.168.1.14    votenow.local`
+
+Let's run `gobuster` on it now.
+
+```
+$ gobuster dir -q -u http://$ip/ -w $dir_medium -x php,txt,html -o gobuster.txt
+/index.html (Status: 200)
+/about.html (Status: 200)
+/assets (Status: 301)
+/config.php (Status: 200)
+```
+
+Nothing interesting. `/config.php` is empty. Here i stuck for lot of hours then i tried to brute force extensions but `gobuster` doesnt support extenstion file. Only `wfuzz` can help here:
+
+
+
