@@ -243,7 +243,7 @@ Last login: Sun Jun 28 00:42:34 BST 2020 on pts/0
 
 Now privesc to root is simple, we have to exploit system capabilities.
 
-Linux capabilities are similar to SUID, we can limite user’s permission and much more. Let's start by scanning the file system for files with capabilities.
+Linux capabilities are similar to SUID, we can limit user’s permission and much more. Let's start by scanning the file system for files with capabilities.
 
 ```
 [admin@votenow ~]$ getcap -r / 2>/dev/null
