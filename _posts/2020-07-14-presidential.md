@@ -3,7 +3,7 @@ title: Vulnhub - Presidential
 description: My writeup on Presidential box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub ssh phpmyadmin wfuzz capabilities
 ---
 
 ![](https://www.history.com/.image/ar_16:9%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cg_faces:center%2Cq_auto:good%2Cw_768/MTY3MTc2NDg2OTU5MjYxMDM2/presidential-elections-gettyimages-78679210.jpg)
@@ -129,6 +129,8 @@ ID           Response   Lines    Word     Chars       Payload
 Let's add it to `/etc/hosts`:
 
 `192.168.1.14    datasafe.votenow.local`
+
+## shell as www-data -> admin | exploiting vulnerable phpmyadmin version
 
 Now we can see phpmyadmin running there:
 
@@ -294,8 +296,3 @@ cat /home/admin/user.txt
 ```
 
 That was an amazing box! :)
-
-
-
-
-
