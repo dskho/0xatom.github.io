@@ -282,12 +282,7 @@ Let's read the flags:
 cat root-final-flag.txt
 Congratulations on getting root.
 
- _._     _,-'""`-._
-(,-.`._,'(       |\`-/|
-    `-.-' \ )-`( , o o)
-          `-    \`_`"'-
-
-This CTF was created by bootlesshacker
+This CTF was created by bootlesshacker - https://security.caerdydd.wales
 
 Please visit my blog and provide feedback - I will be glad to hear from you.
 [root@votenow ~]# cat /home/admin/user.txt
