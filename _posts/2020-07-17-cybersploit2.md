@@ -3,7 +3,7 @@ title: Vulnhub - CyberSploit 2
 description: My writeup on CyberSploit 2 box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub rot47 docker
 ---
 
 ![](https://www.ubackground.com/_ph/11/175205427.jpg)
