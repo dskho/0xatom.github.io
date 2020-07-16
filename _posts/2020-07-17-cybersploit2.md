@@ -8,7 +8,7 @@ tags: vulnhub rot47 docker
 
 ![](https://www.ubackground.com/_ph/11/175205427.jpg)
 
-Hi all, that was a really silly box. Let's pwn it!
+Hi all, let's pwn it!
 
 You can find the machine there > [CyberSploit 2](https://www.vulnhub.com/entry/cybersploit-2,511/){:target="_blank"}
 
