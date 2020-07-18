@@ -55,7 +55,7 @@ rioGegei8m
 
 If you have no idea what `cut` command does, i suggest you to study about it.
 
-My pwntools exploit:
+My pwntools exploit (add 2 backslashes between the space delimiter):
 
 ```python
 #!/usr/bin/env python3
@@ -66,7 +66,7 @@ from pwn import *
 log.info('leviathan series pwntools exploit by atom')
 shell = ssh('leviathan0', 'leviathan.labs.overthewire.org', password='leviathan0', port=2223)
 sh = shell.run('sh')
-sh.sendline('cd .backup; cat bookmarks.html | grep password | cut -d \' \' -f 14 | cut -c1-10')
+sh.sendline('cd .backup; cat bookmarks.html | grep password | cut -d ' ' -f 14 | cut -c1-10')
 log.success("Password for the next level -> " + sh.recvline().decode("utf-8"))
 ```
 
