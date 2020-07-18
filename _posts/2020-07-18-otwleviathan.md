@@ -21,7 +21,7 @@ $ ssh leviathan0@leviathan.labs.overthewire.org -p 2223
 leviathan0@leviathan:~$
 ```
 
-We can see a hidden `.backup` file:
+We can see a hidden `.backup` directory:
 
 ```
 leviathan0@leviathan:~$ ls -la
@@ -34,7 +34,7 @@ drwxr-x---  2 leviathan1 leviathan0 4096 Aug 26  2019 .backup
 -rw-r--r--  1 root       root        675 May 15  2017 .profile
 ```
 
-In this there is a bookmarks.html file, probably password is in it.
+There is a bookmarks.html file in it, probably password is in it.
 
 ```
 leviathan0@leviathan:~/.backup$ ls
