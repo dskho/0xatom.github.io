@@ -85,3 +85,105 @@ $ ./exp.py
 ```
 
 ## Level 1
+
+Let's connect now to the next level:
+
+```
+$ ssh leviathan1@leviathan.labs.overthewire.org -p 2223
+leviathan1@leviathan:~$
+```
+
+We have to deal with a 32bit binary:
+
+```
+leviathan1@leviathan:~$ ls
+check
+leviathan1@leviathan:~$ file check
+check: setuid ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=c735f6f3a3a94adcad8407cc0fda40496fd765dd, not stripped
+```
+
+Let's execute it to see what is does:
+
+```
+leviathan1@leviathan:~$ ./check
+password: lol
+Wrong password, Good Bye ...
+```
+
+Needs a password, if the password is true i guess will give us a shell as leviathan2. Let's do some basic RE on it with ltrace (ltrace = intercepts library calls):
+
+```
+leviathan1@leviathan:~$ ltrace ./check
+__libc_start_main(0x804853b, 1, 0xffffd794, 0x8048610 <unfinished ...>
+printf("password: ")                                                                                              = 10
+getchar(1, 0, 0x65766f6c, 0x646f6700password: 1234
+)                                                                             = 49
+getchar(1, 0, 0x65766f6c, 0x646f6700)                                                                             = 50
+getchar(1, 0, 0x65766f6c, 0x646f6700)                                                                             = 51
+strcmp("123", "sex")                                                                                              = -1
+puts("Wrong password, Good Bye ..."Wrong password, Good Bye ...
+)                                                                              = 29
++++ exited (status 0) +++
+```
+
+It uses the `strcmp` function. `strcmp` compares two strings, so here it compares our input with string `sex`. So `sex` is the password:
+
+```
+leviathan1@leviathan:~$ ltrace -e strcmp ./check
+password: 123
+check->strcmp("123", "sex")                                                                                       = -1
+Wrong password, Good Bye ...
++++ exited (status 0) +++
+leviathan1@leviathan:~$ ./check
+password: sex
+$ whoami
+leviathan2
+```
+
+We can find the password under `/etc/leviathan_pass/leviathan2`:
+
+```
+$ cat /etc/leviathan_pass/leviathan2
+ougahZi8Ta
+```
+
+My pwntools exploit:
+
+```python
+#!/usr/bin/env python3
+#context.log_level = 'debug'
+
+from pwn import *
+
+log.info('leviathan series pwntools exploit by atom')
+shell = ssh('leviathan1', 'leviathan.labs.overthewire.org', password='rioGegei8m', port=2223)
+sh = shell.run('sh')
+sh.sendline('(echo sex;cat) | ./check')
+log.warn('run -> cat /etc/leviathan_pass/leviathan2 to grab the flag!')
+sh.interactive()
+```
+
+```
+$ ./exp.py 
+[*] leviathan series pwntools exploit by atom
+[+] Connecting to leviathan.labs.overthewire.org on port 2223: Done
+[*] leviathan0@leviathan.labs.overthewire.org:
+    Distro    Devuan 2.0
+    OS:       linux
+    Arch:     amd64
+    Version:  4.18.12
+    ASLR:     Disabled
+[+] Opening new channel: 'sh': Done
+[!] run -> cat /etc/leviathan_pass/leviathan2 to grab the flag!
+[*] Switching to interactive mode
+$ $ cat /etc/leviathan_pass/leviathan2
+ougahZi8Ta
+```
+
+## level 2
+
+
+
+
+
+
