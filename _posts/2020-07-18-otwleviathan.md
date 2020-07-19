@@ -284,8 +284,91 @@ Ahdiemoo1j
 
 ## Level 3
 
+Let's connect to level 3:
 
+```
+$ ssh leviathan3@leviathan.labs.overthewire.org -p 2223
+leviathan3@leviathan:~$
+```
 
+We have to deal with a binary again:
+
+```
+leviathan3@leviathan:~$ file level3 
+level3: setuid ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=ed9f6a6d1c89cf1f3f2eff370de4fb1669774fd5, not stripped
+```
+
+Let's run it:
+
+```
+leviathan3@leviathan:~$ ./level3 
+Enter the password> lol
+bzzzzzzzzap. WRONG
+```
+
+Needs a password, let's fire up ltrace.
+
+```
+leviathan3@leviathan:~$ ltrace -e strcmp ./level3
+level3->strcmp("h0no33", "kakaka")                                                                                = -1
+Enter the password> lol
+level3->strcmp("lol\n", "snlprintf\n")                                                                            = -1
+bzzzzzzzzap. WRONG
++++ exited (status 0) +++
+```
+
+Compares our input with string `snlprintf` tricky, let's input that and grab a shell as leviathan4.
+
+```
+leviathan3@leviathan:~$ ./level3 
+Enter the password> snlprintf
+[You've got shell]!
+$ whoami
+leviathan4
+```
+
+Password for next level:
+
+```
+$ cat /etc/leviathan_pass/leviathan4
+vuH0coox6m
+```
+
+My pwntools exploit:
+
+```python
+#!/usr/bin/env python3
+#context.log_level = 'debug'
+
+from pwn import *
+
+log.info('leviathan series pwntools exploit by atom')
+shell = ssh('leviathan3', 'leviathan.labs.overthewire.org', password='Ahdiemoo1j', port=2223)
+sh = shell.run('sh')
+sh.sendline('(echo snlprintf;cat) | ./level3')
+log.warn('run -> cat /etc/leviathan_pass/leviathan4 to grab the flag!')
+sh.interactive()
+```
+
+```
+$ ./exp.py   
+[*] leviathan series pwntools exploit by atom
+[+] Connecting to leviathan.labs.overthewire.org on port 2223: Done
+[*] leviathan2@leviathan.labs.overthewire.org:
+    Distro    Devuan 2.0
+    OS:       linux
+    Arch:     amd64
+    Version:  4.18.12
+    ASLR:     Disabled
+[+] Opening new channel: 'sh': Done
+[!] run -> cat /etc/leviathan_pass/leviathan4 to grab the flag!
+[*] Switching to interactive mode
+$ Enter the password> [You've got shell]!
+$ cat /etc/leviathan_pass/leviathan4
+vuH0coox6m
+```
+
+## Level 4
 
 
 
