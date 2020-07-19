@@ -180,7 +180,59 @@ $ $ cat /etc/leviathan_pass/leviathan2
 ougahZi8Ta
 ```
 
-## level 2
+## Level 2
+
+Let's connect to level 2:
+
+```
+$ ssh leviathan2@leviathan.labs.overthewire.org -p 2223 
+leviathan2@leviathan:~$
+```
+
+We can see an ELF file again:
+
+```
+leviathan2@leviathan:~$ file printfile 
+printfile: setuid ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 2.6.32, BuildID[sha1]=46891a094764828605a00c0c38abfccbe4b46548, not stripped
+```
+
+Let's see what it does:
+
+```
+leviathan2@leviathan:~$ ./printfile 
+*** File Printer ***
+Usage: ./printfile filename
+leviathan2@leviathan:~$ ./printfile "/etc/passwd"
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+...
+```
+
+It prints the contents of a file, cool let's try to print the flag for level3:
+
+```
+leviathan2@leviathan:~$ ./printfile "/etc/leviathan_pass/leviathan3"
+You cant have that file...
+```
+
+Yeap, we cant read this flag. Let's do some basic RE with ltrace again.
+
+```
+leviathan2@leviathan:~$ ltrace ./printfile .profile
+__libc_start_main(0x804852b, 2, 0xffffd784, 0x8048610 <unfinished ...>
+access(".profile", 4)                                                                                             = 0
+snprintf("/bin/cat .profile", 511, "/bin/cat %s", ".profile")                                                     = 17
+geteuid()                                                                                                         = 12002
+geteuid()                                                                                                         = 12002
+setreuid(12002, 12002)                                                                                            = 0
+system("/bin/cat .profile"# ~/.profile: executed by the command interpreter for login shells.
+```
+
+It uses `system()` function with cat command -> `cat + our input`, we have to trick the binary.
+
+
+
+
 
 
 
