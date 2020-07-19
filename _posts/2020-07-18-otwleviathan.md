@@ -370,7 +370,74 @@ vuH0coox6m
 
 ## Level 4
 
+Let's connect to level 4:
 
+```
+ssh leviathan4@leviathan.labs.overthewire.org -p 2223
+leviathan4@leviathan:~$
+```
 
+We can see a hidden `.trash` directory with a binary file in it:
+
+```
+leviathan4@leviathan:~$ ls -la
+total 24
+drwxr-xr-x  3 root root       4096 Aug 26  2019 .
+drwxr-xr-x 10 root root       4096 Aug 26  2019 ..
+-rw-r--r--  1 root root        220 May 15  2017 .bash_logout
+-rw-r--r--  1 root root       3526 May 15  2017 .bashrc
+-rw-r--r--  1 root root        675 May 15  2017 .profile
+dr-xr-x---  2 root leviathan4 4096 Aug 26  2019 .trash
+leviathan4@leviathan:~$ cd .trash/
+leviathan4@leviathan:~/.trash$ ls
+bin
+```
+
+Let's run the binary.
+
+```
+leviathan4@leviathan:~/.trash$ ./bin
+01010100 01101001 01110100 01101000 00110100 01100011 01101111 01101011 01100101 01101001 00001010
+```
+
+Gives us some binary data, let's convert them to ascii:
+
+```
+leviathan4@leviathan:~/.trash$ ./bin | perl -lape '$_=pack"(B8)*",@F'
+Tith4cokei
+```
+
+That's the password for leviathan5.
+
+My pwntools exploit:
+
+```python
+#!/usr/bin/env python3
+#context.log_level = 'debug'
+
+from pwn import *
+
+log.info('leviathan series pwntools exploit by atom')
+shell = ssh('leviathan4', 'leviathan.labs.overthewire.org', password='vuH0coox6m', port=2223)
+sh = shell.run('sh')
+sh.sendline('cd .trash; ./bin | perl -lape '$_=pack"(B8)*",@F'') # add backslash before quote & after @F
+log.success('Password for next level -> ' + sh.recvline().decode("utf-8"))
+```
+
+```
+./exp.py 
+[*] leviathan series pwntools exploit by atom
+[+] Connecting to leviathan.labs.overthewire.org on port 2223: Done
+[*] leviathan2@leviathan.labs.overthewire.org:
+    Distro    Devuan 2.0
+    OS:       linux
+    Arch:     amd64
+    Version:  4.18.12
+    ASLR:     Disabled
+[+] Opening new channel: 'sh': Done
+[+] Password for next level -> $ Tith4cokei
+```
+
+## Level 5
 
 
