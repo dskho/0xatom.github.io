@@ -3,7 +3,7 @@ title: SuNiNaTaS - Web 5
 description: My writeup on web 5 challenge.
 categories:
  - suninatas
-tags: suninatas javascript
+tags: suninatas javascript obfuscated
 ---
 
 ![](https://i1.daumcdn.net/thumb/C264x200/?fname=https://t1.daumcdn.net/cfile/tistory/99DE7733599504E81D)
