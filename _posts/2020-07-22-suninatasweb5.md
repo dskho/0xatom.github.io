@@ -26,9 +26,7 @@ If we check the source code we can see this in the end:
 
 I tried to input this but nothing. Source code has a weird looking javascript code:
 
-```js
-eval(function(p,a,c,k,e,r){e=function(c){return c.toString(a)};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('g l=m o(\'0\',\'1\',\'2\',\'3\',\'4\',\'5\',\'6\',\'7\',\'8\',\'9\',\'a\',\'b\',\'c\',\'d\',\'e\',\'f\');p q(n){g h=\'\';g j=r;s(g i=t;i>0;){i-=4;g k=(n>>i)&u;v(!j||k!=0){j=w;h+=l[k]}}x(h==\'\'?\'0\':h)}',34,34,'||||||||||||||||var|result||start|digit|digitArray|new||Array|function|PASS|true|for|32|0xf|if|false|return'.split('|'),0,{}))		
-```
+![](https://i.imgur.com/LNUggPE.png)
 
 With my experience i can understand that this is obfuscated javascript code. (Obfuscator makes javascript code harder to read) We need to use a deobfuscator to get the clean code, i always use this one [https://lelinhtinh.github.io/de4js/](https://lelinhtinh.github.io/de4js/)
 
