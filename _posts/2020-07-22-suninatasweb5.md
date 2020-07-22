@@ -28,7 +28,7 @@ I tried to input this but nothing. Source code has a weird looking javascript co
 
 ![](https://i.imgur.com/LNUggPE.png)
 
-With my experience i can understand that this is obfuscated javascript code. (Obfuscator makes javascript code harder to read) We need to use a deobfuscator to get the clean code, i always use this one [https://lelinhtinh.github.io/de4js/](https://lelinhtinh.github.io/de4js/)
+With my experience i can understand that this is obfuscated javascript code. (Obfuscator makes javascript code harder to read) We need to use a deobfuscator to get the clean code, i always use this one [de4js](https://lelinhtinh.github.io/de4js/)
 
 ![](https://i.imgur.com/NWkKcon.png)
 
