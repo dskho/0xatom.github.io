@@ -3,7 +3,7 @@ title: SuNiNaTaS - Web 1
 description: My writeup on web 1 challenge.
 categories:
  - suninatas
-tags: suninatas
+tags: suninatas asp.net programming web
 ---
 
 ![](https://i1.daumcdn.net/thumb/C264x200/?fname=https://t1.daumcdn.net/cfile/tistory/99DE7733599504E81D)
