@@ -44,6 +44,8 @@ If our id & pw input are equal will call alert() with an error message & will al
 
 We have to bypass the javascript here, we will input something random like `test:lol` and we will intercept the request with burp and as the hide says: `id = pw` we will send 2 equal data.
 
+## Exploitation
+
 ![](https://i.imgur.com/DVkXm4z.png)
 
 ![](https://i.imgur.com/OfFb0wB.png)
