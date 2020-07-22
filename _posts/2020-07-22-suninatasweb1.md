@@ -1,6 +1,6 @@
 ---
 title: SuNiNaTaS - Web 1
-description: My writeup on Jarbas box.
+description: My writeup on web 1 challenge.
 categories:
  - suninatas
 tags: suninatas
@@ -13,3 +13,27 @@ Hi all, i discovered this korean jeopardy-style CTF. This site has good challeng
 You can start pwning there > [SuNiNaTaS](http://suninatas.com/){:target="_blank"}
 
 ## Source Code Analysis
+
+Challenge provide us the source code that we have to "exploit":
+
+![](https://i.imgur.com/QJ5Wf05.png)
+
+```
+<%
+    str = Request("str")
+
+    If not str = "" Then
+        result = Replace(str,"a","aad")
+        result = Replace(result,"i","in")
+        result1 = Mid(result,2,2)
+        result2 = Mid(result,4,6)
+        result = result1 & result2
+        Response.write result
+        If result = "admin" Then
+            pw = "????????"
+        End if
+    End if
+%>
+```
+
+Took me some time to figure out the language of it because im not familiar with. It's ASP.NET (server-side web-application framework). I have no idea about ASP, i never coded in my life but if you know a programming language you can easily understand what is going with some google.
