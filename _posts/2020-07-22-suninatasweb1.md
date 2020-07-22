@@ -54,14 +54,14 @@ result = Replace(result,"i","in")
 
 From `ai` -> `aadin` we can simple add `m` so will be `ami` -> `aadmin`
 
-Then we have these functions:
+Then we have these functions (Mid function returns a specified number of characters from a string):
 
 ```
 result1 = Mid(result,2,2)
 result2 = Mid(result,4,6)
 ```
 
-Mid function returns a specified number of characters from a string. The syntax is:
+The syntax is:
 
 `Mid(string, start[, length])`
 
