@@ -54,4 +54,27 @@ result = Replace(result,"i","in")
 
 From `ai` -> `aadin` we can simple add `m` so will be `ami` -> `aadmin`
 
+Then we have these functions:
+
+```
+result1 = Mid(result,2,2)
+result2 = Mid(result,4,6)
+```
+
+Mid function returns a specified number of characters from a string. The syntax is:
+
+`Mid(string, start[, length])`
+
+So we have `aadmin` so there first Mid() will be -> `ad` - The second one will be ->  `min` so we have `admin`, Let's input `ami` and grab the flag.
+
+![](https://i.imgur.com/eil8Jtl.png)
+
+`Authkey : k09rsogjorejv934u592oi`
+
+After we enter the Authkey:
+
+![](https://i.imgur.com/wtMjlJS.png)
+
+Was really fun, all the `*.kr` stuff are amazing! ;)
+
 
