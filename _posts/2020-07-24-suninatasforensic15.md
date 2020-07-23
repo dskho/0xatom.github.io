@@ -8,7 +8,7 @@ tags: suninatas metadata exiftool
 
 ![](https://i1.daumcdn.net/thumb/C264x200/?fname=https://t1.daumcdn.net/cfile/tistory/99DE7733599504E81D)
 
-Hi all, let's start with the second forensic challenge.
+Hi all, let's pwn the second forensic challenge.
 
 You can start pwning there > [SuNiNaTaS](http://suninatas.com/){:target="_blank"}
 
