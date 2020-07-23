@@ -3,7 +3,7 @@ title: SuNiNaTaS - Misc 13
 description: My writeup on misc 13 challenge.
 categories:
  - suninatas
-tags: suninatas
+tags: suninatas fcrackzip
 ---
 
 ![](https://i1.daumcdn.net/thumb/C264x200/?fname=https://t1.daumcdn.net/cfile/tistory/99DE7733599504E81D)
