@@ -26,7 +26,7 @@ $ file diary.mp3
 diary.mp3: Audio file with ID3 version 2.3.0, contains:MPEG ADTS, layer III, v1, 128 kbps, 44.1 kHz, JntStereo
 ```
 
-I started to doing stuff sonic-visualiser but the solution is much simplier, the authkey is hidden in metadata.
+I started to doing stuff with sonic-visualiser but the solution is much simplier, the authkey is hidden in metadata.
 
 ```
 $ exiftool diary.mp3 
