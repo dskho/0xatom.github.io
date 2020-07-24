@@ -72,18 +72,40 @@ Q2 Answer: `c:\v196vv8\v1tvr0.exe`
 
 `Q3 : Download time of Keylogger - ex) 2016-05-27_22:00:00 (yyyy-mm-dd_hh:mm:ss)`
 
-Now we have to check internet explorer history, the path is this `C:\Users\training\AppData\Local\Microsoft\Windows\History\History.IE5` there we can find an `index.dat` file. I searched for tools to open it and i found a good one: [Index.Dat Analyser](https://www.sudokuwiki.org/indexdat.htm){:target="_blank"}
+Now we have to check internet explorer history, the path is this `C:\Users\training\AppData\Local\Microsoft\Windows\History\History.IE5` but for some reason the `index.dat` gives wrong date i dont know why. I used this tool to get the history [BrowsingHistoryView](https://www.nirsoft.net/utils/browsing_history_view.html){:target="_blank"}
 
-Let's scan first:
+Use this setting:
 
-![](https://i.imgur.com/y3QfrrY.png)
+![](https://i.imgur.com/rBztN8I.png)
 
-Now let's open it and search for keylogger:
+We can easily get it now:
 
-![](https://i.imgur.com/EL7buRb.png)
+![](https://i.imgur.com/KgPAjMR.png)
 
-Q3 Answer: `2016-05-23_7:25:06`
+Q3 Answer: `2016-05-24_04:25:06`
 
 ## Q4 Solution
 
 `Q4 : What did Keylogger detect and save? There is a Key`
+
+That's pretty easy we have to visit the keylogger hidden directory and search in it:
+
+![](https://i.imgur.com/PcIK7p5.png)
+
+Q4 Answer: `blackkey is a Good man`
+
+## Making the hash
+
+Now let's put them together:
+
+`MD5(Key of Q1+Answer of Q2+Answer of Q3+Key of Q4)`
+
+`what_the_he11_1s_keeyc:\v196vv8\v1tvr0.exe2016-05-24_04:25:06blackkey is a Good man` 
+
+I used this md5 generator: [tool](https://www.md5hashgenerator.com/)
+
+Authkey : `970f891e3667fce147b222cc9a8699d4`
+
+![](https://i.imgur.com/ysuNwxK.png)
+
+Whoa.. that was great! :D
