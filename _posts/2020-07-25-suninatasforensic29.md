@@ -3,7 +3,7 @@ title: SuNiNaTaS - Forensic 29
 description: My writeup on forensic 29 challenge.
 categories:
  - suninatas
-tags: suninatas
+tags: suninatas vmware egg windows
 ---
 
 ![](https://i1.daumcdn.net/thumb/C264x200/?fname=https://t1.daumcdn.net/cfile/tistory/99DE7733599504E81D)
@@ -102,7 +102,7 @@ Now let's put them together:
 
 `what_the_he11_1s_keeyc:\v196vv8\v1tvr0.exe2016-05-24_04:25:06blackkey is a Good man` 
 
-I used this md5 generator: [tool](https://www.md5hashgenerator.com/)
+I used this md5 generator: [tool](https://www.md5hashgenerator.com/){:target="_blank"}
 
 Authkey : `970f891e3667fce147b222cc9a8699d4`
 
