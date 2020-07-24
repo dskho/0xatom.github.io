@@ -56,5 +56,34 @@ Q1 Answer: `what_the_he11_1s_keey`
 
 ## Q2 Solution
 
-`Q2 : Installed Keylogger's location & filename(All character is lower case)`
+`Q2 : Installed Keylogger's location & filename(All character is lower case) - ex) c:\windows\notepad.exe`
 
+Let's check the system processes:
+
+![](https://i.imgur.com/zO979OX.png)
+
+`v1tvr0` seems weird, let's get the path of it:
+
+![](https://i.imgur.com/Y5DeEtf.png)
+
+Q2 Answer: `c:\v196vv8\v1tvr0.exe`
+
+## Q3 Solution
+
+`Q3 : Download time of Keylogger - ex) 2016-05-27_22:00:00 (yyyy-mm-dd_hh:mm:ss)`
+
+Now we have to check internet explorer history, the path is this `C:\Users\training\AppData\Local\Microsoft\Windows\History\History.IE5` there we can find an `index.dat` file. I searched for tools to open it and i found a good one: [Index.Dat Analyser](https://www.sudokuwiki.org/indexdat.htm){:target="_blank"}
+
+Let's scan first:
+
+![](https://i.imgur.com/y3QfrrY.png)
+
+Now let's open it and search for keylogger:
+
+![](https://i.imgur.com/EL7buRb.png)
+
+Q3 Answer: `2016-05-23_7:25:06`
+
+## Q4 Solution
+
+`Q4 : What did Keylogger detect and save? There is a Key`
