@@ -72,7 +72,7 @@ Q2 Answer: `c:\v196vv8\v1tvr0.exe`
 
 `Q3 : Download time of Keylogger - ex) 2016-05-27_22:00:00 (yyyy-mm-dd_hh:mm:ss)`
 
-Now we have to check internet explorer history, the path is this `C:\Users\training\AppData\Local\Microsoft\Windows\History\History.IE5` but for some reason the `index.dat` gives wrong date i dont know why. I used this tool to get the history [BrowsingHistoryView](https://www.nirsoft.net/utils/browsing_history_view.html){:target="_blank"}
+Now we have to check internet explorer history, the path is this `C:\Users\training\AppData\Local\Microsoft\Windows\History\History.IE5` but for some reason the `index.dat` gives wrong data i dont know why. I used this tool to get the history [BrowsingHistoryView](https://www.nirsoft.net/utils/browsing_history_view.html){:target="_blank"}
 
 Use this setting:
 
