@@ -4,9 +4,9 @@
 # ---------------------------------------------------------------
 
 # Site
-title: âtøm | CTF Writeups
+title: 0xatom | CTF Writeups
 subtitle: CTF Addict - Security Enthusiast - Pentester
-description: Discord > âtøm#8707
+description: Discord/0xatom#8707
 author: âtøm
 # Support language: de, en, fr-FR, id, ja, ko, pt-BR, pt, ru, zh-Hans, zh-hk, zh-tw
 language: en
@@ -215,6 +215,7 @@ font:
 # Value is the target link (E.g. GitHub: https://github.com/iissnan)
 social:
   GitHub: https://github.com/0xatom
+  Twitter: https://twittter.com/0xatom
 
 
 # Social Links Icons
