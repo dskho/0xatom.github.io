@@ -3,7 +3,7 @@ title: Vulnhub - Photographer
 description: My writeup on Photographer box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub smb
 ---
 
 ![](https://i.imgur.com/9KCQ8Re.png)
@@ -50,3 +50,50 @@ PORT     STATE SERVICE     VERSION
 MAC Address: 00:0C:29:89:92:69 (VMware)
 Service Info: Host: PHOTOGRAPHER
 ```
+
+Port 80 doesnt give much, so let's enumerate SMB. Let's list the shares first.
+
+```
+$ smbmap -H $ip
+[+] Guest session   	IP: 192.168.1.5:445	Name: photographer.zte.com.cn                           
+        Disk                                                  	Permissions	Comment
+	----                                                  	-----------	-------
+	print$                                            	NO ACCESS	Printer Drivers
+	sambashare                                        	READ ONLY	Samba on Ubuntu
+	IPC$                                              	NO ACCESS	IPC Service (photographer server (Samba, Ubuntu))
+```
+
+Let's dig into `sambashare` since we have `READ ONLY`.
+
+```
+$ smbclient //$ip/sambashare
+Enter WORKGROUP\root's password: 
+Try "help" to get a list of possible commands.
+smb: \> ls
+  .                                   D        0  Tue Jul 21 04:30:07 2020
+  ..                                  D        0  Tue Jul 21 12:44:25 2020
+  mailsent.txt                        N      503  Tue Jul 21 04:29:40 2020
+  wordpress.bkp.zip                   N 13930308  Tue Jul 21 04:22:23 2020
+
+		278627392 blocks of size 1024. 264268400 blocks available
+smb: \> get mailsent.txt 
+getting file \mailsent.txt of size 503 as mailsent.txt (122.8 KiloBytes/sec) (average 122.8 KiloBytes/sec)
+smb: \> get wordpress.bkp.zip 
+getting file \wordpress.bkp.zip of size 13930308 as wordpress.bkp.zip (85023.8 KiloBytes/sec) (average 82953.1 KiloBytes/sec)
+smb: \> exit
+```
+
+`mailsent.txt` provide us 2 mails & a message:
+
+```
+agi@photographer.com
+daisa@photographer.com
+
+Hi Daisa!
+Your site is ready now.
+Don't forget your secret, my babygirl ;)
+```
+
+About `wordpress.bkp.zip` seems useless.
+
+Let's enumerate now port `8000` in the end we can see this: "Built with Koken" Let's search for possible exploits on koken.
