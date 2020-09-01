@@ -69,18 +69,18 @@ Let's dig into `sambashare` since we have `READ ONLY`.
 $ smbclient //$ip/sambashare
 Enter WORKGROUP\root's password: 
 Try "help" to get a list of possible commands.
-smb: \> ls
+smb: > ls
   .                                   D        0  Tue Jul 21 04:30:07 2020
   ..                                  D        0  Tue Jul 21 12:44:25 2020
   mailsent.txt                        N      503  Tue Jul 21 04:29:40 2020
   wordpress.bkp.zip                   N 13930308  Tue Jul 21 04:22:23 2020
 
 		278627392 blocks of size 1024. 264268400 blocks available
-smb: \> get mailsent.txt 
+smb: > get mailsent.txt 
 getting file \mailsent.txt of size 503 as mailsent.txt (122.8 KiloBytes/sec) (average 122.8 KiloBytes/sec)
-smb: \> get wordpress.bkp.zip 
+smb: > get wordpress.bkp.zip 
 getting file \wordpress.bkp.zip of size 13930308 as wordpress.bkp.zip (85023.8 KiloBytes/sec) (average 82953.1 KiloBytes/sec)
-smb: \> exit
+smb: > exit
 ```
 
 `mailsent.txt` provide us 2 mails & a message:
