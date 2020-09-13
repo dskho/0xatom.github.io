@@ -12,7 +12,7 @@ You can find the machine there > [The Planets Mercury](https://www.vulnhub.com/e
 
 ## Summary
 
-This machine is quite easy, i have to admit that i stuck on privilege escalation for a while. Starting off with a sqlmap scan on the page we can grab some creds and ssh with them, this will give us a low-privilege shell on the box. Second privesc is really easy we just have to decode some base64 data & the final privesc to root is tricky we have to think smart to exploit it.
+This machine is quite easy, i have to admit that i stuck on privilege escalation part for a while. Starting off with a sqlmap scan on the page we can grab some creds and ssh with them, this will give us a low-privilege shell on the box. Second privesc is really easy we just have to decode some base64 data & the final privesc to root is tricky we have to think smart to exploit it.
 Let's start! :sunglasses:
 
 ## Enumeration/Reconnaissance
@@ -216,7 +216,7 @@ linuxmaster@mercury:~$ echo $PATH
 /home/linuxmaster:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 ```
 
-We can use now the `--preserve-env` to set our environment variables.
+We can use now the `--preserve-env` to set our environment variable.
 
 ```
 linuxmaster@mercury:~$ sudo --preserve-env=PATH /usr/bin/check_syslog.sh 
@@ -264,7 +264,4 @@ If you have any feedback please contact me at SirFlash@protonmail.com
 [root_flag_69426d9fda579afbffd9c2d47ca31d90]
 ```
 
-I enjoyed this box very much & i learnt some new things. See you! :simple_smile:
-
-
-
+I enjoyed this box very much & i learnt some new things. See you! :smile:
