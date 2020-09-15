@@ -1,6 +1,6 @@
 ---
 title: Vulnhub - OnSystem ShellDredd #1 Hannah
-description: My writeup on OnSystem ShellDredd #1 Hannah box.
+description: My writeup on OnSystem ShellDredd 1 Hannah box.
 categories:
  - vulnhub
 tags: vulnhub ssh etcpasswd cpulimit
