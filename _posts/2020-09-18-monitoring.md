@@ -68,7 +68,7 @@ PORT     STATE SERVICE    VERSION
 5667/tcp open  tcpwrapped
 ```
 
-Lot of stuff, http/https display the same website Nagios XI platform. Nagios is an open-source computer-software application that monitors systems, networks etc. I've 0 experience with nagios and nagios pentesting. If we press the "Access Nagios XI" button will re-direct us to login panel.
+Lot of stuff, http/https display the same website Nagios XI platform. Nagios is an open-source computer-software application that monitors systems, networks etc. I've 0 experience with nagios and nagios pentesting. If we press the "Access Nagios XI" button will redirect us to login panel.
 
 ![](https://i.imgur.com/NBOoRgI.png)
 
@@ -77,6 +77,8 @@ Tried lot of stuff, `admin:admin` - `guest:guest` etc nothing. I googled "nagios
 So we're in using this creds `nagiosadmin:admin`:
 
 ![](https://i.imgur.com/wrAr3Fa.png)
+
+## Shell as root
 
 I wasted too much time finding a way to execute php code or something, but no luck. Then i noticed the version of nagios in the down left corner :
 
