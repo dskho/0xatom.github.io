@@ -12,7 +12,7 @@ You can find the machine there > [OnSystem ShellDredd #1 Hannah](https://www.vul
 
 ## Summary
 
-This box was a really easy one, starting off by login into FTP anonymous and grab hannah's SSH private key this will give us a low low-privilege shell. Rooting the box is a bit tricky because the cpulimit SUID doesn't allow us to spawn a root shell directly. Let's pwn it! :sunglasses:
+This box was a really easy one, starting off by login into FTP anonymous and grab hannah's SSH private key this will give us a low-privilege shell. Rooting the box is a bit tricky because the cpulimit SUID doesn't allow us to spawn a root shell directly. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
