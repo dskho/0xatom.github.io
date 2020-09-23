@@ -12,7 +12,7 @@ You can find the machine there > [Bizarre Adventure Sticky Fingers](https://www.
 
 ## Summary
 
-To be honest, i didn't really like this box. The way you get shell is waste of time anyway..! We start by finding an admin page and brute force it using hydra after looooooong time we get the password. Then after some decoding/decrypting we get a password, from the images we get the username and we're in. Privilege escalation to root is a simple kernel exploit. Let's pwn it! :sunglasses:
+To be honest, i didn't really like this box. The way you get shell is waste of time anyway..! We start by finding an admin page and brute force it using hydra after looooooong time we get the password. Then after some decoding/decrypting we get a password and we're in. Privilege escalation to root is a simple kernel exploit. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
