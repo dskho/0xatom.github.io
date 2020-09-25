@@ -47,3 +47,51 @@ PORT   STATE SERVICE VERSION
 |_http-title: Did not follow redirect to http://funbox6.box/
 |_https-redirect: ERROR: Script execution failed (use -d to debug)
 ```
+
+The description of the box says to add `funbox6.box` in `/etc/hosts` so let's do this:
+
+```
+$ nano /etc/hosts
+$ cat /etc/hosts
+..data..
+192.168.1.12    funbox6.box
+```
+
+Now when we browse the website we can see a wordpress site, and there is a really weird thing that says "OPENED":
+
+![](https://i.imgur.com/H0Az7TY.png)
+
+If we refresh the page after some minutes we can see now says "CLOSED":
+
+![](https://i.imgur.com/eNRJQtp.png)
+
+So my guess is:
+
+```
+OPENED -> EXPLOITABLE
+CLOSED -> NO EXPLOITABLE
+```
+
+Probably there is a cronjob in the background, we can do a trick here so we don't have to refresh all the time! We will use the `watch` command to run `curl` every 1 second. When we see that greps OPENED we will fast enumerate the website & exploit it! :sunglasses:
+
+```
+$ watch -n 1 'curl http://funbox6.box/ | grep OPENED'
+```
+
+![](https://i.imgur.com/n64LLvf.png)
+
+Perfect, now if we go to read the blog we can see an admin comment:
+
+![](https://i.imgur.com/nopeoPn.png)
+
+That's base32 because base32 uses as alphabet A-Z / 2-7, let's decode it:
+
+```
+$ echo MFSG22LOHJTWC3LCNRSWQYLMNQ3TONY= | base32 -d
+admin:gamblehall777
+```
+
+## Shell as www-data
+
+Perfect we have the admin creds, we can use metasploit now to spawn a reverse shell fast.
+
