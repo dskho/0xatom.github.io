@@ -59,3 +59,73 @@ FLAG-232f99b4178bdc7fef7eb1f0f78831f9
 We got the flag! `FLAG-232f99b4178bdc7fef7eb1f0f78831f9`
 
 ## SysAdmin Part 3
+
+![](https://i.imgur.com/wu9VRvO.png)
+
+Now we have to connect as `architect:FLAG-232f99b4178bdc7fef7eb1f0f78831f9` and search for the flag. We don't need to open a new SSH connection we can just use `su`:
+
+```
+morpheus@lxc-sysadmin:~$ su - architect
+Password: FLAG-232f99b4178bdc7fef7eb1f0f78831f9
+architect@lxc-sysadmin:~$
+```
+
+Let's search for files that owned by user architect:
+
+```
+architect@lxc-sysadmin:~$ find / -user "architect" 2>/dev/null
+/var/www/index.php
+```
+
+```
+architect@lxc-sysadmin:~$ cat /var/www/index.php
+
+$info = (object)array();
+$info->username = "arch";
+$info->password = "asdftgTst5sdf6309sdsdff9lsdftz";
+$id = 1003;
+```
+
+We can see some DB creds, let's use them with mysql & search for the flag:
+
+```
+architect@lxc-sysadmin:~$ mysql -u arch -p
+Enter password:
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| arch               |
++--------------------+
+2 rows in set (0.00 sec)
+
+mysql> use arch;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> show tables;
++----------------+
+| Tables_in_arch |
++----------------+
+| arch           |
+| flag           |
++----------------+
+2 rows in set (0.00 sec)
+
+mysql> select * from flag;
++---------------------------------------+
+| flag                                  |
++---------------------------------------+
+| FLAG-55548fdb24a6ef248d8fdfde2720f6bd |
++---------------------------------------+
+1 row in set (0.00 sec)
+
+mysql>
+```
+
+We got that flag! `FLAG-55548fdb24a6ef248d8fdfde2720f6bd`
+
+## SysAdmin Part 4
