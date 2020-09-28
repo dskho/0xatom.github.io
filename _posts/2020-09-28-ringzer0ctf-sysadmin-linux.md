@@ -155,7 +155,7 @@ We got the flag!
 
 ```
 oracle@lxc-sysadmin:~$ base64 -d flag.txt
-FLAG-d325e738fa7d87d4f5607c302b37db20oracle
+FLAG-d325e738fa7d87d4f5607c302b37db20
 ```
 
 ## SysAdmin Part 5
