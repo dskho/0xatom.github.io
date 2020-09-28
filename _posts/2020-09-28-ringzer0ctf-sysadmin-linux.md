@@ -159,3 +159,36 @@ FLAG-d325e738fa7d87d4f5607c302b37db20
 ```
 
 ## SysAdmin Part 5
+
+![](https://i.imgur.com/XHg2IGt.png)
+
+We have to decrypt the oracle's encrypted file:
+
+```
+oracle@lxc-sysadmin:~$ ls -la
+..data..
+-r-x------ 1 oracle oracle   90 Oct  2  2018 encflag.txt.enc
+```
+
+I googled around "how to decrypt enc files" and all the answers are around `openssl` tool so i tried one of the commands i found but asks for a password:
+
+```
+oracle@lxc-sysadmin:~$ openssl enc -aes-256-cbc -d -in encflag.txt.enc -out file.txt
+enter aes-256-cbc decryption password:
+```
+
+Hmm, so i had the idea to use `grep` to search for `openssl` commands:
+
+```
+oracle@lxc-sysadmin:~$ grep -ri "openssl" .
+./.bashrc:alias reveal="openssl enc -aes-256-cbc -a -d -in encflag.txt.enc -k 'lp6PWgOwDctq5Yx7ntTmBpOISc'"
+```
+
+So we can use the `reveal` alias to get the flag!
+
+```
+oracle@lxc-sysadmin:~$ reveal
+FLAG-54e7f8d0ea560fa7ed98e832900fc45b
+```
+
+## SysAdmin Part 6
