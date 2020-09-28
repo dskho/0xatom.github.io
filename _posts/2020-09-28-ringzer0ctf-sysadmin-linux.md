@@ -1,5 +1,5 @@
 ---
-title: ringzer0ctf SysAdmin Linux
+title: ringzer0ctf - SysAdmin Linux
 description: My writeup on ringzer0ctf SysAdmin Linux challenges.
 categories:
  - ringzer0ctf
@@ -38,5 +38,24 @@ We have the first flag! `Flag-7e0cfcf090a2fe53c97ea3edd3883d0d`
 
 ## SysAdmin Part 2
 
+![](https://i.imgur.com/DmuTk1b.png)
 
+We don't need to change user, our goal now is to find architect password.
 
+Using the same `grep` technique we can detect a base64 password:
+
+```
+morpheus@lxc-sysadmin:~$ grep -R "architect" / 2>/dev/null
+/etc/fstab:#//TheMAtrix/phone  /media/Matrix  cifs  username=architect,password=$(base64 -d "RkxBRy0yMzJmOTliNDE3OGJkYzdmZWY3ZWIxZjBmNzg4MzFmOQ=="),iocharset=utf8,sec=ntlm  0  0
+```
+
+Let's decode it:
+
+```
+morpheus@lxc-sysadmin:~$ echo RkxBRy0yMzJmOTliNDE3OGJkYzdmZWY3ZWIxZjBmNzg4MzFmOQ== | base64 -d
+FLAG-232f99b4178bdc7fef7eb1f0f78831f9
+```
+
+We got the flag! `FLAG-232f99b4178bdc7fef7eb1f0f78831f9`
+
+## SysAdmin Part 3
