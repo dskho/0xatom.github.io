@@ -12,7 +12,7 @@ You can find the machine there > [UnDiscovered](https://www.vulnhub.com/entry/un
 
 ## Summary
 
-This was one of the best vulnhub box, thanks to [@aniqfakhrul](https://twitter.com/aniqfakhrul){:target="_blank"} & [@h0j3n](https://twitter.com/h0j3n){:target="_blank"} for this awesome box! We start by enumerating subdomains and bruteforcing RiteCMS this gives us shell as www-data. Then we exploit NFS to get shell as william, after we use a SUID binary to get access a leonard and finally privesc is about capabilities! Let’s pwn it! :sunglasses:
+This is one of the best vulnhub boxes, thanks to [@aniqfakhrul](https://twitter.com/aniqfakhrul){:target="_blank"} & [@h0j3n](https://twitter.com/h0j3n){:target="_blank"} for this awesome box! We start by enumerating subdomains and bruteforcing RiteCMS this gives us shell as www-data. Then we exploit NFS to get shell as william, after we use a SUID binary to get access a leonard and finally privesc is about capabilities! Let’s pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
@@ -258,7 +258,7 @@ uid=3003(william) gid=3003(william) groups=3003(william)
 
 ## Shell as leonard
 
-In william's directory we can see a SUID file that reads `admin.sh`:
+In william's directory we can see a SUID file:
 
 ```
 william@undiscovered:~$ ls -la script
@@ -266,13 +266,6 @@ william@undiscovered:~$ ls -la script
 william@undiscovered:~$ ./script
 [i] Start Admin Area!
 [i] Make sure to keep this script safe from anyone else!
-william@undiscovered:~$ cat admin.sh
-#!/bin/sh
-
-    echo "[i] Start Admin Area!"
-    echo "[i] Make sure to keep this script safe from anyone else!"
-    
-    exit 0
 ```
 
 If we run `strings` on it we can see that runs `/bin/cat` under `/home/leonard/`:
