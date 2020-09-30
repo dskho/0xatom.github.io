@@ -21,9 +21,9 @@ Let's start as always with nmap.
 ```
 $ ip=192.168.1.5                                     
 $ nmap -p- -sC -sV -oN nmap/initial $ip
-Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-30 21:01 EEST
-Nmap scan report for undiscovered.thm (192.168.1.5)
-Host is up (0.00044s latency).
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-09-30 21:10 EEST
+Nmap scan report for undiscovered.zte.com.cn (192.168.1.5)
+Host is up (0.00036s latency).
 Not shown: 65530 closed ports
 PORT      STATE SERVICE  VERSION
 22/tcp    open  ssh      OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
@@ -33,7 +33,7 @@ PORT      STATE SERVICE  VERSION
 |_  256 2a:38:ce:ea:61:82:eb:de:c4:e0:2b:55:7f:cc:13:bc (ED25519)
 80/tcp    open  http     Apache httpd 2.4.18
 |_http-server-header: Apache/2.4.18 (Ubuntu)
-|_http-title: Site doesn't have a title (text/html; charset=UTF-8).
+|_http-title: Did not follow redirect to http://undiscovered.thm
 111/tcp   open  rpcbind  2-4 (RPC #100000)
 | rpcinfo: 
 |   program version    port/proto  service
@@ -57,4 +57,65 @@ PORT      STATE SERVICE  VERSION
 44886/tcp open  nlockmgr 1-4 (RPC #100021)
 ```
 
-Lot of interesting stuff, let's enumerate port 80 first.
+Lot of interesting stuff, let's enumerate port 80 first. When we visit port 80 doens't load, nmap scan says something important `Did not follow redirect to http://undiscovered.thm` probably a virtual host we have to add it to `/etc/hosts`:
+
+```
+$ echo "192.168.1.5 undiscovered.thm" | tee -a /etc/hosts
+192.168.1.5 undiscovered.thm
+$ cat /etc/hosts
+..data..
+192.168.1.5 undiscovered.thm
+```
+
+Now it works, i tried lot of stuff like `gobuster`,`dirb` but nothing at all. Since we have a virtual host we can enumerate for subdomains. Let's fire up `wfuzz`:
+
+```
+$ wfuzz -w /root/Documents/wordlists/SecLists/Discovery/DNS/shubs-subdomains.txt -H "Host: FUZZ.undiscovered.thm" --hw 26 undiscovered.thm
+
+000000096:   200        68 L     341 W    4626 Ch     "dashboard"                                                                                                             
+000000102:   200        83 L     341 W    4599 Ch     "booking"                                                                                                               
+000000129:   200        68 L     341 W    4521 Ch     "play"                                                                                                                  
+000000156:   200        68 L     341 W    4626 Ch     "resources"                                                                                                             
+000000218:   200        68 L     341 W    4542 Ch     "forms"                                                                                                                 
+000000257:   200        68 L     341 W    4542 Ch     "start"                                                                                                                 
+000000553:   200        68 L     341 W    4584 Ch     "manager"                                                                                                               
+000000681:   200        68 L     341 W    4584 Ch     "network"                                                                                                               
+000000733:   200        68 L     341 W    4605 Ch     "internet"                                                                                                              
+000000889:   200        68 L     341 W    4521 Ch     "view"                                                                                                                  
+000001245:   200        68 L     341 W    4521 Ch     "gold"                                                                                                                  
+000001305:   200        68 L     341 W    4668 Ch     "maintenance"                                                                                                           
+000005963:   200        68 L     341 W    4605 Ch     "terminal"                                                                                                              
+000006033:   200        68 L     341 W    4584 Ch     "newsite"                                                                                                               
+000007423:   200        68 L     341 W    4584 Ch     "develop"                                                                                                               
+000022957:   200        68 L     341 W    4605 Ch     "mailgate"                                                                                                              
+000034373:   200        82 L     341 W    4650 Ch     "deliver" 
+```
+
+Lot subdomains, all of them run `RiteCMS` but most of them seem broken admin panel missing. One of them works thats `deliver.undiscovered.thm` let's add it to `/etc/hosts`:
+
+```
+$ echo "192.168.1.5 deliver.undiscovered.thm" | tee -a /etc/hosts
+192.168.1.5 deliver.undiscovered.thm
+$ cat /etc/hosts 
+..data..
+192.168.1.5 undiscovered.thm
+192.168.1.5 deliver.undiscovered.thm
+```
+
+Now we can see the admin panel under `/cms`:
+
+![](https://i.imgur.com/FINKQFM.png)
+
+Let's search for possible exploits on RiteCMS:
+
+```
+$ searchsploit -w ritecms
+-----------------------------------------------------------------------------------------------------------------
+ Exploit Title                                                       |  URL
+-----------------------------------------------------------------------------------------------------------------
+RiteCMS 1.0.0 - Multiple Vulnerabilities                             | https://www.exploit-db.com/exploits/27315
+RiteCMS 2.2.1 - Authenticated Remote Code Execution                  | https://www.exploit-db.com/exploits/48636
+-----------------------------------------------------------------------------------------------------------------
+```
+
+Second one seems perfect, but we need creds. Tried default username/password `admin:admin` but didn't work. Let's fire up hydra!
