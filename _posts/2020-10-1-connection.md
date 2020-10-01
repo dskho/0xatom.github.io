@@ -3,7 +3,7 @@ title: HackMyVM - Connection
 description: My writeup on Connection box.
 categories:
  - HackMyVM
-tags: HackMyVM smb
+tags: HackMyVM smb gdb suid
 ---
 
 ![](https://i.imgur.com/VYEVjve.png)
