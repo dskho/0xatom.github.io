@@ -12,7 +12,8 @@ tags: vulnhub
 
 | Box Info      | Details       | 
 | ------------- |:-------------:| 
-| Name :        | **Funbox EasyEnum**  | 
+| Box Name :    | **Funbox EasyEnum**  | 
+| Series :      | **Funbox**           |
 | Difficulty :  | **Easy/Medium**      |   
 | Release Date :| **19 Sep 2020**      |    
 | OS :          | **GNU/Linux**        |   
