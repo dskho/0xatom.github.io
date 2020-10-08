@@ -17,12 +17,11 @@ tags: vulnhub
 | Release Date :| are neat      |    
 | OS :          | are neat      |   
 | Maker :       | are neat      | 
-
-You can find the machine there > [Funbox EasyEnum](https://www.vulnhub.com/entry/funbox-easyenum,565/){:target="_blank"}
+| Download :    | [Funbox EasyEnum](https://www.vulnhub.com/entry/funbox-easyenum,565/){:target="_blank"}      | 
 
 ## Summary
 
- Let’s pwn it! :sunglasses:
+Let’s pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
