@@ -12,8 +12,8 @@ tags: vulnhub
 
 | Box Info      | Details       | 
 | ------------- |:-------------:| 
-| Name :        | Funbox EasyEnum | 
-| Difficulty :  | ```diff + Easy```      |   
+| Name :        | **Funbox EasyEnum** | 
+| Difficulty :  | **Easy/Medium**      |   
 | Release Date :| are neat      |    
 | OS :          | are neat      |   
 | Maker :       | [@0815R2d2](https://twitter.com/@0815R2d2){:target="_blank"}      | 
