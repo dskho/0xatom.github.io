@@ -6,13 +6,17 @@ categories:
 tags: vulnhub
 ---
 
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
 ![](https://i.imgur.com/6ghxvXy.png)
+
+## Box Stats
+
+| Box Info      | Details       | 
+| ------------- |:-------------:| 
+| Name :        | right-aligned | 
+| Difficulty :  | centered      |   
+| Release Date :| are neat      |    
+| OS :          | are neat      |   
+| Maker :       | are neat      | 
 
 You can find the machine there > [Funbox EasyEnum](https://www.vulnhub.com/entry/funbox-easyenum,565/){:target="_blank"}
 
@@ -25,3 +29,4 @@ You can find the machine there > [Funbox EasyEnum](https://www.vulnhub.com/entry
 Let's start as always with nmap.
 
 ```
+
