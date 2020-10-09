@@ -3,7 +3,7 @@ title: Vulnhub - digitalworld.local JOY
 description: My writeup on digitalworld.local JOY box.
 categories:
  - vulnhub
-tags: vulnhub udp snmp nse tftp ProFTPd searchsploit metasploit
+tags: vulnhub udp snmp nse tftp ProFTPd searchsploit metasploit sudo suid ossec
 ---
 
 ![](https://i.imgur.com/h3KUnSs.png)
