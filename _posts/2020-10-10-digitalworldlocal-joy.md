@@ -3,7 +3,7 @@ title: Vulnhub - digitalworld.local JOY
 description: My writeup on digitalworld.local JOY box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub udp
 ---
 
 ![](https://i.imgur.com/h3KUnSs.png)
@@ -120,3 +120,109 @@ PORT    STATE SERVICE
 137/udp open  netbios-ns
 161/udp open  snmp
 ```
+
+Ton of services, let's start with FTP since we have anonymous allowed. Once we connect we can see 2 directories `download/upload` the `upload` directory has lot of stuff in. One file the `directory` has the "copy" of Patrick's directory. Let's download it & analyze it:
+
+```
+$ ftp $ip
+Connected to 192.168.1.19.
+220 The Good Tech Inc. FTP Server
+Name (192.168.1.19:root): anonymous
+331 Anonymous login ok, send your complete email address as your password
+Password:
+230 Anonymous access granted, restrictions apply
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+200 PORT command successful
+150 Opening ASCII mode data connection for file list
+drwxrwxr-x   2 ftp      ftp          4096 Jan  6  2019 download
+drwxrwxr-x   2 ftp      ftp          4096 Jan 10  2019 upload
+226 Transfer complete
+ftp> cd upload
+250 CWD command successful
+ftp> ls -la
+200 PORT command successful
+150 Opening ASCII mode data connection for file list
+drwxrwxr-x   2 ftp      ftp          4096 Jan 10  2019 .
+drwxr-x---   4 ftp      ftp          4096 Jan  6  2019 ..
+-rwxrwxr-x   1 ftp      ftp          2312 Oct  9 20:33 directory
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_armadillo
+-rw-rw-rw-   1 ftp      ftp            25 Jan  6  2019 project_bravado
+-rw-rw-rw-   1 ftp      ftp            88 Jan  6  2019 project_desperado
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_emilio
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_flamingo
+-rw-rw-rw-   1 ftp      ftp             7 Jan  6  2019 project_indigo
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_komodo
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_luyano
+-rw-rw-rw-   1 ftp      ftp             8 Jan  6  2019 project_malindo
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_okacho
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_polento
+-rw-rw-rw-   1 ftp      ftp            20 Jan  6  2019 project_ronaldinho
+-rw-rw-rw-   1 ftp      ftp            55 Jan  6  2019 project_sicko
+-rw-rw-rw-   1 ftp      ftp            57 Jan  6  2019 project_toto
+-rw-rw-rw-   1 ftp      ftp             5 Jan  6  2019 project_uno
+-rw-rw-rw-   1 ftp      ftp             9 Jan  6  2019 project_vivino
+-rw-rw-rw-   1 ftp      ftp             0 Jan  6  2019 project_woranto
+-rw-rw-rw-   1 ftp      ftp            20 Jan  6  2019 project_yolo
+-rw-rw-rw-   1 ftp      ftp           180 Jan  6  2019 project_zoo
+-rwxrwxr-x   1 ftp      ftp            24 Jan  6  2019 reminder
+226 Transfer complete
+ftp> get directory
+local: directory remote: directory
+200 PORT command successful
+150 Opening BINARY mode data connection for directory (2312 bytes)
+226 Transfer complete
+2312 bytes received in 0.00 secs (13.8673 MB/s)
+ftp> exit
+```
+
+`directory` file contents:
+
+```
+Patrick's Directory
+
+total 116
+drwxr-xr-x 18 patrick patrick 4096 Oct 10 04:30 .
+drwxr-xr-x  4 root    root    4096 Jan  6  2019 ..
+-rw-r--r--  1 patrick patrick    0 Oct 10 04:25 7pYsPPfWWJGuEcxGzrCIaan0R5PZxasS.txt
+-rw-------  1 patrick patrick  185 Jan 28  2019 .bash_history
+-rw-r--r--  1 patrick patrick  220 Dec 23  2018 .bash_logout
+-rw-r--r--  1 patrick patrick 3526 Dec 23  2018 .bashrc
+drwx------  7 patrick patrick 4096 Jan 10  2019 .cache
+drwx------ 10 patrick patrick 4096 Dec 26  2018 .config
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Desktop
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Documents
+drwxr-xr-x  3 patrick patrick 4096 Jan  6  2019 Downloads
+-rw-r--r--  1 patrick patrick   24 Oct 10 04:30 dvPzl5ksSoFc1f4s5wB9aJSE4w5Ckbnp0IxVAOPveiqONxpUuwle0GktTWY9ZY9S.txt
+-rw-r--r--  1 patrick patrick   24 Oct 10 04:25 eLkugh9zZn90nDbkTWqZATIXNkuEnS3BDEDaK21jqkA7TPB1sleyH447hyXe2Go9.txt
+drwx------  3 patrick patrick 4096 Dec 26  2018 .gnupg
+-rwxrwxrwx  1 patrick patrick    0 Jan  9  2019 haha
+-rw-------  1 patrick patrick 8532 Jan 28  2019 .ICEauthority
+drwxr-xr-x  3 patrick patrick 4096 Dec 26  2018 .local
+drwx------  5 patrick patrick 4096 Dec 28  2018 .mozilla
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Music
+drwxr-xr-x  2 patrick patrick 4096 Jan  8  2019 .nano
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Pictures
+-rw-r--r--  1 patrick patrick  675 Dec 23  2018 .profile
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Public
+d---------  2 root    root    4096 Jan  9  2019 script
+-rw-r--r--  1 patrick patrick    0 Oct 10 04:20 SOqnxq7l9smzwdSfatyfFdnzXk9zyC8g.txt
+drwx------  2 patrick patrick 4096 Dec 26  2018 .ssh
+-rw-r--r--  1 patrick patrick    0 Jan  6  2019 Sun
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Templates
+-rw-r--r--  1 patrick patrick    0 Jan  6  2019 .txt
+-rw-r--r--  1 patrick patrick  407 Jan 27  2019 version_control
+drwxr-xr-x  2 patrick patrick 4096 Dec 26  2018 Videos
+-rw-r--r--  1 patrick patrick   24 Oct 10 04:20 wKtEXVOvDSqfqlkUVSMz6lbV21bwBqjZv8VajeyO2m6yXkWfZ7wTLCq8ZAkLdCxb.txt
+-rw-r--r--  1 patrick patrick    0 Oct 10 04:30 Xuc1ngPttrOz9HoFPek6OjXDHVhLSfC6.txt
+
+You should know where the directory can be accessed.
+
+Information of this Machine!
+
+Linux JOY 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
+```
+
+
+
