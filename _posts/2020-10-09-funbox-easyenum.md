@@ -22,7 +22,7 @@ tags: vulnhub gobuster curl web-shell hydra mysql
 
 ## Summary
 
-Let’s pwn it! :sunglasses:
+Funbox EasyEnum was a pretty easy box. We start by finding a php web shell so this is pretty straightforward and we get a shell as www-data. First privesc is about brute force on user goat & final one we exploit mysql to spawn a root shell. Let’s pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
