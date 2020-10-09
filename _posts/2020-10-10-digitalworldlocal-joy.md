@@ -3,7 +3,7 @@ title: Vulnhub - digitalworld.local JOY
 description: My writeup on digitalworld.local JOY box.
 categories:
  - vulnhub
-tags: vulnhub udp
+tags: vulnhub udp snmp nse tftp
 ---
 
 ![](https://i.imgur.com/h3KUnSs.png)
@@ -224,5 +224,65 @@ Information of this Machine!
 Linux JOY 4.9.0-8-amd64 #1 SMP Debian 4.9.130-2 (2018-10-27) x86_64 GNU/Linux
 ```
 
+One file is interesting here is the `version_control` but how can we download it? If we go back to UDP scan we can see that `snmp` is opened. Simple Network Management Protocol(SNMP) allows devices to communicate. Let's enumerate SNMP, i always prefer to use Nmap Scripting Engine(NSE) for it. Let's search for available NSE scripts:
 
+```
+$ ls /usr/share/nmap/scripts | grep "snmp"
+snmp-brute.nse
+snmp-hh3c-logins.nse
+snmp-info.nse
+snmp-interfaces.nse
+snmp-ios-config.nse
+snmp-netstat.nse
+snmp-processes.nse
+snmp-sysdescr.nse
+snmp-win32-services.nse
+snmp-win32-shares.nse
+snmp-win32-software.nse
+snmp-win32-users.nse
+```
+
+The `snmp-processes.nse` seems good, let's fire it up! There will be a huge output but one of them reveals a really interesting info. TFTP is running under port `36969` on `/home/patrick` so that means we can download the file we want!
+
+```
+$ nmap -p 161 -sU --script snmp-processes $ip  
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-10-09 23:51 EEST
+Nmap scan report for joy.zte.com.cn (192.168.1.19)
+Host is up (0.00045s latency).
+
+PORT    STATE SERVICE
+161/udp open  snmp
+| snmp-processes: 
+..data..
+|   716: 
+|     Name: in.tftpd
+|     Path: /usr/sbin/in.tftpd
+|     Params: --listen --user tftp --address 0.0.0.0:36969 --secure /home/patrick
+```
+
+Let's download the file:
+
+```
+$ tftp $ip 36969
+tftp> get version_control
+Received 419 bytes in 0.0 seconds
+tftp> quit
+```
+
+```
+Version Control of External-Facing Services:
+
+Apache: 2.4.25
+Dropbear SSH: 0.34
+ProFTPd: 1.3.5
+Samba: 4.5.12
+
+We should switch to OpenSSH and upgrade ProFTPd.
+
+Note that we have some other configurations in this machine.
+1. The webroot is no longer /var/www/html. We have changed it to /var/www/tryingharderisjoy.
+2. I am trying to perform some simple bash scripting tutorials. Let me see how it turns out.
+```
+
+## Shell as www-data
 
