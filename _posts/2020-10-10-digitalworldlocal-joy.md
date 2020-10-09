@@ -22,7 +22,7 @@ tags: vulnhub udp snmp nse tftp ProFTPd searchsploit metasploit sudo suid ossec 
 
 ## Summary
 
-digitalworld.local JOY was a pretty good & realistic box that i really enjoyed pwning. Let’s pwn it! :sunglasses:
+digitalworld.local JOY was a pretty good & realistic box that i really enjoyed pwning. With 2 words it's all about exploiting a vulnerable ProFTPd version this gives us shell as www-data. First privesc to use patrick is simple we find his plaintext creds & final privesc is exploiting a bash script. Let’s pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
