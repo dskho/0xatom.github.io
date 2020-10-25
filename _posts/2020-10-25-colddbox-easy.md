@@ -3,7 +3,7 @@ title: Vulnhub - ColddBox Easy
 description: My writeup on ColddBox Easy box.
 categories:
  - vulnhub
-tags: vulnhub wordpress wpscan
+tags: vulnhub wordpress wpscan ftp sudo wp-config
 ---
 
 ![](https://i.imgur.com/Zf32sKS.png)
