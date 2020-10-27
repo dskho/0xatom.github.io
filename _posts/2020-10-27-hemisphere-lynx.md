@@ -22,7 +22,7 @@ tags: vulnhub cewl hydra ssh base64
 
 ## Summary
 
-This was a really easy box, pretty basic stuff perfect to pass your time. We generate a custom wordlist with cewl and we run a brute force attack this way we get the user flag. Root is simply a base64 decoding. Let's pwn it! :sunglasses:
+This was a really easy box, pretty basic stuff perfect to pass your time. We generate a custom wordlist with cewl and we run a brute force attack on ssh this way we get the user flag. Root is simply a base64 decoding. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
