@@ -82,4 +82,55 @@ uid=1000(johannes) gid=1000(johannes) grupos=1000(johannes),24(cdrom),25(floppy)
 
 ## Shell as root
 
+Under `/Desktop` we can see a hidden creds file:
 
+```
+johannes@Lynx:~/Desktop$ ls -la
+total 12
+drwxr-xr-x  2 root     root     4096 oct  1 13:39 .
+drwxr-xr-x 10 johannes johannes 4096 oct  1 21:46 ..
+-rw-r--r--  1 root     root       37 oct  1 13:39 .creds
+```
+
+It contains a base64 string, let's decode it:
+
+```
+johannes@Lynx:~/Desktop$ cat .creds 
+MjBLbDdpUzFLQ2FuaU84RFdNemg6dG9vcg==
+johannes@Lynx:~/Desktop$ cat .creds | base64 -d
+20Kl7iS1KCaniO8DWMzh:toor
+```
+
+Seems like reversed, let's reverse it.
+
+```
+johannes@Lynx:~/Desktop$ cat .creds | base64 -d | rev
+root:hzMWD8OinaCK1Si7lK02
+```
+
+Now we can simply switch to user root:
+
+```
+johannes@Lynx:~/Desktop$ su - root
+Contraseña: 
+root@Lynx:~# whoami;id
+root
+uid=0(root) gid=0(root) grupos=0(root)
+```
+
+## Reading the flag(s)
+
+```
+root@Lynx:~# cat /root/root.txt 
+4xKWoV6QGHTetItzD7mI
+root@Lynx:~# cat /home/johannes/user.txt 
+uZ8iARX2aiDV1bNz7Dx4
+```
+
+One of the BEST vulnhub boxes i ever did.
+
+## Thank You
+
+Thank you for taking the time to read my writeup. If you don't understand something from the writeup or want to ask me something feel free to contact me through discord(0xatom#8707) or send me a message through twitter [0xatom](https://twitter.com/0xatom){:target="_blank"} :blush:
+
+Until next time keep pwning hard! :fire:
