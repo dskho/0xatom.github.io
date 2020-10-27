@@ -136,8 +136,6 @@ root@Lynx:~# cat /home/johannes/user.txt
 uZ8iARX2aiDV1bNz7Dx4
 ```
 
-One of the BEST vulnhub boxes i ever did.
-
 ## Thank You
 
 Thank you for taking the time to read my writeup. If you don't understand something from the writeup or want to ask me something feel free to contact me through discord(0xatom#8707) or send me a message through twitter [0xatom](https://twitter.com/0xatom){:target="_blank"} :blush:
