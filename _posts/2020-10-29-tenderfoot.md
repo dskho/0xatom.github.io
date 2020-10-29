@@ -3,7 +3,7 @@ title: Vulnhub - TenderFoot
 description: My writeup on TenderFoot box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub brainfuck base64 base32 suid sudo ftp
 ---
 
 ![](https://i.imgur.com/wjyiTq8.png)
@@ -22,7 +22,7 @@ tags: vulnhub
 
 ## Summary
 
-Let's pwn it! :sunglasses:
+This was a pretty easy box, that took me some time because i was using the wrong wordlists. LOL We start by finding a username & a password into a brainfuck code this give us shell as monica. First privesc is easy we just have to use a SUID binary. Privesc to root is about exploiting FTP with sudo. Let's pwn it! :sunglasses:
 
 ## Enumeration/Reconnaissance
 
