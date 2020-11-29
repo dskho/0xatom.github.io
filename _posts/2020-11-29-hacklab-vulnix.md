@@ -3,7 +3,7 @@ title: Vulnhub - HackLAB Vulnix
 description: My writeup on HackLAB Vulnix box.
 categories:
  - vulnhub
-tags: vulnhub smtp metasploit smtp-user-enum hydra ssh nfs
+tags: vulnhub smtp metasploit smtp-user-enum hydra ssh nfs exports sudo
 ---
 
 ![](https://i.imgur.com/B2q8rOI.jpg)
@@ -27,7 +27,7 @@ Ah, many years have passed since i pwned this box. I did this box with my friend
 
 ## PoC 
 
-![]()
+![](https://i.imgur.com/AhwkR1O.gif)
 
 ## Target IP
 
