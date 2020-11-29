@@ -23,7 +23,7 @@ tags: vulnhub smtp metasploit smtp-user-enum hydra ssh nfs exports sudo
 
 ## Summary
 
-Ah, many years have passed since i pwned this box. I did this box with my friend `@Redfox`, it was a great teamwork. Let's pwn it! :sunglasses:
+Ah, many years have passed since i pwned this box. I did this box with my friend `@Redfox`, it was a great teamwork. We start off by enumerating SMTP to find out system users and then we brute force them and we get access on the system. Then the privescs are about NFS exploitation. Let's pwn it! :sunglasses:
 
 ## PoC 
 
