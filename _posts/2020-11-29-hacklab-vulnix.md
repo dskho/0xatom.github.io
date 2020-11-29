@@ -3,7 +3,7 @@ title: Vulnhub - HackLAB Vulnix
 description: My writeup on HackLAB Vulnix box.
 categories:
  - vulnhub
-tags: vulnhub
+tags: vulnhub smtp metasploit smtp-user-enum hydra
 ---
 
 ![](https://i.imgur.com/B2q8rOI.jpg)
@@ -111,3 +111,80 @@ PORT      STATE SERVICE    VERSION
 53356/tcp open  nlockmgr   1-4 (RPC #100021)
 57501/tcp open  mountd     1-3 (RPC #100005)
 ```
+
+Ton of services, a good practise is to take them one by one. So a good start is the SMTP, SMTP (Simple Mail Transfer Protocol) is mostly used for sending out emails. SMTP allow us to perform username enumeration via the VRFY and EXPN commands.
+
+```
+VRFY = The server is asked to verify if a email address or username exists.
+EXPN = This SMTP command asks for a confirmation about the identification.
+```
+
+I'll show you 2 ways to do that, with `metasploit` & `smtp-user-enum`.
+
+Metasploit (Takes some time):
+
+```
+$ service postgresql start; msfconsole -q
+msf6 > search name:smtp type:auxiliary
+
+Matching Modules
+================
+
+   #  Name                                     Disclosure Date  Rank    Check  Description
+   -  ----                                     ---------------  ----    -----  -----------
+   ... data ...
+   3  auxiliary/scanner/smtp/smtp_enum                          normal  No     SMTP User Enumeration Utility
+   ... data ...
+   
+msf6 > use auxiliary/scanner/smtp/smtp_enum
+msf6 auxiliary(scanner/smtp/smtp_enum) > set RHOST 192.168.1.21
+RHOST => 192.168.1.21
+msf6 auxiliary(scanner/smtp/smtp_enum) > exploit
+
+[*] 192.168.1.21:25       - 192.168.1.21:25 Banner: 220 vulnix ESMTP Postfix (Ubuntu)
+[+] 192.168.1.21:25       - 192.168.1.21:25 Users found: , backup, bin, daemon, games, gnats, irc, landscape, libuuid, list, lp, mail, man, messagebus, news, nobody, postfix, postmaster, proxy, sshd, sync, sys, syslog, user, uucp, whoopsie, www-data
+[*] 192.168.1.21:25       - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+smtp-user-enum (Kali has it pre-installed or you can find [here](https://github.com/pentestmonkey/smtp-user-enum){:target="_blank"}:
+
+```
+$ smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t $ip                                                                                 
+
+######## Scan started at Sun Nov 29 14:09:22 2020 #########
+192.168.1.21: backup exists
+192.168.1.21: bin exists
+192.168.1.21: daemon exists
+192.168.1.21: games exists
+192.168.1.21: gnats exists
+192.168.1.21: irc exists
+192.168.1.21: landscape exists
+192.168.1.21: libuuid exists
+192.168.1.21: lp exists
+192.168.1.21: list exists
+192.168.1.21: man exists
+192.168.1.21: mail exists
+192.168.1.21: messagebus exists
+192.168.1.21: nobody exists
+192.168.1.21: news exists
+192.168.1.21: postmaster exists
+192.168.1.21: postfix exists
+192.168.1.21: proxy exists
+192.168.1.21: root exists
+192.168.1.21: ROOT exists
+192.168.1.21: sshd exists
+192.168.1.21: sync exists
+192.168.1.21: sys exists
+192.168.1.21: syslog exists
+192.168.1.21: user exists
+192.168.1.21: uucp exists
+192.168.1.21: whoopsie exists
+192.168.1.21: www-data exists
+```
+
+We can detect 2 "weird" usernames the `user` & `whoopsie` so we can perform a SSH brute force attack now using `hydra`. A brute force on `user` will give us access. Note: You **_MUST_** use number of connects in parallel(-t 4).
+
+
+
+
