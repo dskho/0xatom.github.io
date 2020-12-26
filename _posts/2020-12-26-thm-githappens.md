@@ -6,7 +6,7 @@ categories:
 tags: tryhackme git gitdumper bash
 ---
 
-![](https://i.imgur.com/ec64b32.png)
+![](https://i.imgur.com/pqrO7lX.png)
 
 ## Box Stats
 
