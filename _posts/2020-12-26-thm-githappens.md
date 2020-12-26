@@ -3,7 +3,7 @@ title: TryHackMe - Git Happens
 description: My writeup on Git Happens box.
 categories:
  - tryhackme
-tags: tryhackme git
+tags: tryhackme git gitdumper bash
 ---
 
 ![](https://i.imgur.com/ec64b32.png)
