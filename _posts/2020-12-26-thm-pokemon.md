@@ -3,7 +3,7 @@ title: TryHackMe - Gotta Catch'em All!
 description: My writeup on Gotta Catch'em All! box.
 categories:
  - tryhackme
-tags: tryhackme
+tags: tryhackme curl cyberchef hex rot14 grep find base64
 ---
 
 ![](https://i.imgur.com/kDEBdrm.png)
