@@ -31,7 +31,6 @@ total 46M
 drwxr-xr-x 2 root root 4.0K Dec 28 15:12  .
 drwxr-xr-x 7 root root 4.0K Dec 27 21:40  ..
 -rw-r--r-- 1 root root  46M Dec 28 15:09 'Language Arts - DEF CON 27- The Official Soundtrack - 02 Luckiness (Kilmanjaro Remix).wav'
-
 ```
 
 ## What link is hiding in the music?
@@ -50,7 +49,7 @@ There is a QR code, play a bit with the filters so you can scan it.
 
 ![](https://i.imgur.com/T7zROji.png)
 
-The scan gives the answer `https://voca.ro/imPgJC013AW`.
+The scan gives the answer `https://voca.ro/imPgJC013AW`
 
 ## What does the found audio convert to? [CHECK HINT, LINK IS DEAD]
 
