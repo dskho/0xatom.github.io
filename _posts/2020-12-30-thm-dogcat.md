@@ -89,7 +89,7 @@ We have a `ternary operator`, is an alternative method for using if-else stateme
 
 We have the `$_GET`, is a PHP super global variable for collecting form data. For example `$_GET['pwn']` in URL will be like that `?pwn=`
 
-So it translates to `ext` parameter should be equal to the `ext` GET parameter, else we it use `.php`
+So it translates to `ext` parameter should be equal to the `ext` GET parameter, else will it use `.php`
 
 So we just have to add `&ext` to URL to read files.
 
