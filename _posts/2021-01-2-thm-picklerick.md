@@ -3,7 +3,7 @@ title: TryHackMe - Pickle Rick
 description: My writeup on Pickle Rick box.
 categories:
  - tryhackme
-tags: tryhackme
+tags: tryhackme tac gobuster filter php sudo
 ---
 
 ![](https://i.imgur.com/851RMUk.png)
@@ -19,7 +19,7 @@ tags: tryhackme
 
 ## Summary
 
-Happy new year everyone! First writeup of the year, let's start!
+Happy new year everyone! First writeup of the year, an easy box that we have to bypass a simple filter so we can read files. Let's start!
 
 ## Enumeration/Reconnaissance
 
@@ -76,7 +76,7 @@ Now we have access to a command panel and we can execute system commands:
 
 ## What is the first ingredient Rick needs?
 
-Running `ls` we can see a file named `Sup3rS3cretPickl3Ingred.txt` we can read it from browser since we're under `/var/www/html`
+Running `ls` we can see a file named `Sup3rS3cretPickl3Ingred.txt` we can read it from browser since it's under `/var/www/html`
 
 ```
 $ curl -s http://$ip/Sup3rS3cretPickl3Ingred.txt
