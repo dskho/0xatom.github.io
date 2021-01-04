@@ -6,7 +6,7 @@ categories:
 tags: tryhackme gobuster python hijacking PATH capabilities perl
 ---
 
-![](https://i.imgur.com/851RMUk.png)
+![](https://i.imgur.com/DECYWDh.png)
 
 ## Box Stats
 
@@ -96,7 +96,7 @@ alice@wonderland:~$ ls -la walrus_and_the_carpenter.py
 -rw-r--r-- 1 root root 3577 May 25  2020 walrus_and_the_carpenter.py
 ```
 
-Here i stuck for a long time, source code has nothing interesting only a poem. I noticed the `random` module so i googled `python random module privilege escalation` and i found out the solution this p privesc is about python library hijacking.
+Here i stuck for a long time, source code has nothing interesting only a poem. I noticed the `random` module so i googled `python random module privilege escalation` and i found out the solution this privesc is about python library hijacking.
 
 Running this command:
 
