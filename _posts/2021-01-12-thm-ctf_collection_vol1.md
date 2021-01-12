@@ -3,7 +3,7 @@ title: TryHackMe - CTF collection Vol 1
 description: My writeup on CTF collection Vol 1 challenges.
 categories:
  - tryhackme
-tags: tryhackme
+tags: tryhackme ctf base64 stego cipher wireshark
 ---
 
 ![](https://i.imgur.com/mn1SW0T.png)
@@ -241,7 +241,7 @@ goes to:
 
 I used these 2 tools: [dec -> hex](https://www.rapidtables.com/convert/number/hex-to-decimal.html){:target="_blank"} - [hex -> ascii](https://www.rapidtables.com/convert/number/hex-to-ascii.html){:target="_blank"}
 
-##
+## Read the packet 
 
 On this challenges, it gives us a pcapng file. It's a packet capture format that contains a dump of data packets captured over a network.
 
